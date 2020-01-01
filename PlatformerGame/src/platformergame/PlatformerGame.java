@@ -64,12 +64,15 @@ public class PlatformerGame extends Application {
     private void update(){
         if (isPressed(KeyCode.W) && player.getTranslateY() >= 5){
             jumpPlayer();
+            System.out.println("W");
         }
         if (isPressed(KeyCode.A) && player.getTranslateX() >=5){
+            System.out.println("A");
             movePlayerX(-5);
         }
         if (isPressed(KeyCode.D) && player.getTranslateX() + 40 <=levelWidth-5){
             movePlayerX(5);
+            System.out.println("D");
         }
         if (playerVelocity.getY() < 10){
             playerVelocity = playerVelocity.add(0, 1);
@@ -78,23 +81,25 @@ public class PlatformerGame extends Application {
         }
 
 
-    private void movePlayerX(int value){
-    boolean movingRight = value > 0;
-    for (int i=0; i < Math.abs(value);i++){
-        for (Node platform : platforms){
-            if(player.getBoundsInParent().intersects(platform.getBoundsInParent())){
-                if(movingRight){
-                    if (player.getTranslateX() + 40 == platform.getTranslateX()){
-                        return;
+    private void movePlayerX(int value) {
+        boolean movingRight = value > 0;
+
+        for (int i = 0; i < Math.abs(value); i++) {
+            for (Node platform : platforms) {
+                if (player.getBoundsInParent().intersects(platform.getBoundsInParent())) {
+                    if (movingRight) {
+                        if (player.getTranslateX() + 40 == platform.getTranslateX() && player.getTranslateY() + 40 != platform.getTranslateY()) {
+                            return;
+                        }
                     }
-                }else {
-                    if (player.getTranslateX() == platform.getTranslateX() + 60) {
-                        return;
+                    else {
+                        if (player.getTranslateX() == platform.getTranslateX() + 60 && player.getTranslateY() + 40 != platform.getTranslateY()) {
+                            return;
+                        }
                     }
                 }
             }
-        }
-        player.setTranslateX(player.getTranslateX() + (movingRight ? 1 : -1));
+            player.setTranslateX(player.getTranslateX() + (movingRight ? 1 : -1));
         }
     }
     private void movePlayerY(int value){
@@ -103,12 +108,12 @@ public class PlatformerGame extends Application {
             for (Node platform : platforms){
                 if(player.getBoundsInParent().intersects(platform.getBoundsInParent())){
                     if(movingDown){
-                        if (player.getTranslateY() + 40 == platform.getTranslateY()){
+                        if (player.getTranslateY() + 40 == platform.getTranslateY() && player.getTranslateX() + 40 != platform.getTranslateX()){
                             canJump = true;
                             return;
                         }
                     }else {
-                        if (player.getTranslateY() == platform.getTranslateY() + 60) {
+                        if (player.getTranslateY() == platform.getTranslateY() + 60 && player.getTranslateX() + 40 != platform.getTranslateX()) {
                             return;
                         }
                     }
@@ -128,6 +133,8 @@ public class PlatformerGame extends Application {
         entity.setTranslateX(x);
         entity.setTranslateY(y);
         entity.setFill(color);
+        entity.setStroke(Color.WHITE);
+        entity.setStrokeWidth(1);
         gameRoot.getChildren().add(entity);
         return entity;
 
