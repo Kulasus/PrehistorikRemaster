@@ -7,6 +7,7 @@ package platformergame;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
@@ -22,6 +23,7 @@ public class Game {
     private String[] levelMap;
     private Entity entityCreator;
     private Pane appPane, gamePane, uiPane;
+    private Point2D nullVector = new Point2D(0,0);
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgoundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
         this.bg = new Rectangle(backgroundWidth, backgroundHeight);
@@ -60,7 +62,6 @@ public class Game {
     
     public void update(){
         if (isPressed(KeyCode.W) && player.getPlayerEntity().getTranslateY() >= 5){
-            System.out.println("W");
             jumpPlayer();
         }
         if (isPressed(KeyCode.A) && player.getPlayerEntity().getTranslateX() >=5){
@@ -73,6 +74,7 @@ public class Game {
             player.setPlayerVelocity(player.getPlayerVelocity().add(0,1));
         }
         movePlayerY((int)player.getPlayerVelocity().getY());
+        System.out.println(player.getPlayerVelocity());
     }
     
     private void movePlayerX(int value) {
@@ -109,6 +111,7 @@ public class Game {
                         }
                     }else {
                         if (player.getPlayerEntity().getTranslateY() == platform.getTranslateY() + 60 && player.getPlayerEntity().getTranslateX() + 40 != platform.getTranslateX()) {
+                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,5));
                             return;
                         }
                     }
