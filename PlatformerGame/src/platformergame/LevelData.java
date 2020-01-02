@@ -5,10 +5,7 @@ public class LevelData {
         resolutin = 28 columns x 7 layers
         0 = Nothing
         1 = Platform
-        2 = Enemy TODO
-        3 = Spawn Point TODO
-        4 = Collectible TODO
-        5 = Level end TODO  
+        2 = Collectible
     */
     public static String[] LEVEL1 = new String[]{
         "1111111111111111111111111111",
@@ -21,7 +18,7 @@ public class LevelData {
         "0000000000000000000000000000",
         "0000000001100000000000000000",
         "0000000001111111111000000000",
-        "0000000001000000000000000000",
+        "0000002001000000000000000000",
         "1111111111111111111111111111"       
     };
     

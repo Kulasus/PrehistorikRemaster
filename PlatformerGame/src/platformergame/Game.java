@@ -18,6 +18,7 @@ public class Game {
     private Player player;
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
     private ArrayList<Node> platforms = new ArrayList<>();
+    private ArrayList<Node> collectibles = new ArrayList<>();
     private Rectangle bg;
     private int levelWidth;
     private String[] levelMap;
@@ -48,6 +49,9 @@ public class Game {
                         Node platform = entityCreator.createEntity(j*60, i *60, 60, 60, Color.GREEN, gamePane);
                         platforms.add(platform);
                         break;
+                    case '2':
+                        Node collectible = entityCreator.createCollectible(j*60+30,i*60+30,30,Color.ORANGE,gamePane);
+                        collectibles.add(collectible);
                 }
             }
         }
