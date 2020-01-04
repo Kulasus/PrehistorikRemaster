@@ -7,11 +7,9 @@ package platformergame;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -22,7 +20,7 @@ public class Game {
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
     private ArrayList<Node> platforms = new ArrayList<>();
     private ArrayList<Node> collectibles = new ArrayList<>();
-    private ArrayList<Node> mokeys = new ArrayList<>();
+    private ArrayList<Monkey> monkeys = new ArrayList<>();
     private Rectangle bg;
     private int levelWidth;
     private String[] levelMap;
@@ -30,6 +28,7 @@ public class Game {
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
     private UI ui;
+    private Random rand = new Random();
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
         this.levelWidth = levelMap[0].length() * 60;
@@ -58,14 +57,13 @@ public class Game {
                         collectibles.add(collectible);
                         break;
                     case '3':
-                        Node monkey = entityCreator.createEntity(j*60, i*60, 60, 60, Color.RED, gamePane);
-                        mokeys.add((monkey));
-                        break;
+                        monkeys.add(new Monkey(j*60,i*60,60,60,Color.RED,gamePane,new Point2D(0, 0),entityCreator));
                 }
             }
         }
         
         ui.setScoreboard(uiPane);
+        ui.setHealthboard(uiPane);
         
         player.getPlayerEntity().translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
@@ -75,7 +73,6 @@ public class Game {
         });
         appPane.getChildren().addAll(gamePane, uiPane);
     }
-    
     public void update(){
         if (isPressed(KeyCode.W) && player.getPlayerEntity().getTranslateY() >= 5){
             jumpPlayer();
@@ -90,7 +87,14 @@ public class Game {
             player.setPlayerVelocity(player.getPlayerVelocity().add(0,1));
         }
         movePlayerY((int)player.getPlayerVelocity().getY());
-        System.out.println(player.getPlayerVelocity());
+
+        for (Monkey monkey : monkeys) {
+            monkeyJump(monkey);
+            if (monkey.getMonkeyVelocity().getY() < 10){
+                monkey.setMonkeyVelocity(monkey.getMonkeyVelocity().add(0,1));
+            }
+            moveMonkeyY((int)monkey.getMonkeyVelocity().getY(),monkey);
+        }
     }
     private void movePlayerX(int value) {
         boolean movingRight = value > 0;
@@ -131,6 +135,28 @@ public class Game {
                     }
                 }
             }
+            
+            
+            //Monkey collision
+            for (Monkey monkey : monkeys) {
+                if (player.getPlayerEntity().getBoundsInParent().intersects(monkey.getMonkeyEntity().getBoundsInParent())) {
+                    if (movingRight) {
+                        if (player.getPlayerEntity().getTranslateX() + 40 == monkey.getMonkeyEntity().getTranslateX() && player.getPlayerEntity().getTranslateY() + 40 != monkey.getMonkeyEntity().getTranslateY()) {
+                            ui.setHealth(1);
+                            jumpPlayer();
+                            return;
+                        }
+                    }
+                    else {
+                        if (player.getPlayerEntity().getTranslateX() == monkey.getMonkeyEntity().getTranslateX() + 60 && player.getPlayerEntity().getTranslateY() + 40 != monkey.getMonkeyEntity().getTranslateY()) {
+                            ui.setHealth(1);
+                            jumpPlayer();
+                            return;
+                        }
+                    }
+                }
+            }
+            
             player.getPlayerEntity().setTranslateX(player.getPlayerEntity().getTranslateX() + (movingRight ? 1 : -1));
         }
     }
@@ -182,6 +208,25 @@ public class Game {
                     }
                 }
             }
+            
+            //Monkey collision
+            for (Monkey monkey : monkeys){
+                if(player.getPlayerEntity().getBoundsInParent().intersects(monkey.getMonkeyEntity().getBoundsInParent())){
+                    if(movingDown){
+                        if (player.getPlayerEntity().getTranslateY() + 40 == monkey.getMonkeyEntity().getTranslateY() && player.getPlayerEntity().getTranslateX() + 40 != monkey.getMonkeyEntity().getTranslateX()){
+                            ui.setHealth(1);
+                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,-30));
+                            return;
+                        }
+                    }else {
+                        if (player.getPlayerEntity().getTranslateY() == monkey.getMonkeyEntity().getTranslateY() + 60 && player.getPlayerEntity().getTranslateX() + 40 != monkey.getMonkeyEntity().getTranslateX()) {
+                            ui.setHealth(1);
+                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,20));
+                            return;
+                        }
+                    }
+                }
+            }
             player.setCanJump(false);
             player.getPlayerEntity().setTranslateY(player.getPlayerEntity().getTranslateY() + (movingDown ? 1 : -1));
         }
@@ -216,6 +261,40 @@ public class Game {
 
     public int getLevelWidth() {
         return levelWidth;
+    }    
+
+    private void moveMonkeyY(int value, Monkey monkey) {
+        boolean movingDown = value >= 0;
+        for (int i=0; i < Math.abs(value);i++){
+            //Platforms collision
+            for (Node platform : platforms){
+                //System.out.println(monkey.toString() + "crashed");
+                if(monkey.getMonkeyEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
+                    if(movingDown){
+                        if (monkey.getMonkeyEntity().getTranslateY() + 60 == platform.getTranslateY() && monkey.getMonkeyEntity().getTranslateX() + 60 != platform.getTranslateX()){
+                            monkey.setCanJump(true);
+                            return;
+                        }
+                    }else {
+                        if (monkey.getMonkeyEntity().getTranslateY() == platform.getTranslateY() + 60 && monkey.getMonkeyEntity().getTranslateX() + 60 != platform.getTranslateX()) {
+                            monkey.setMonkeyVelocity(monkey.getMonkeyVelocity().add(0,5));
+                            return;
+                        }
+                    }
+                }
+            }
+            monkey.setCanJump(false);
+            monkey.getMonkeyEntity().setTranslateY(monkey.getMonkeyEntity().getTranslateY() + (movingDown ? 1 : -1));
+        }   
     }
-    
+
+    private void monkeyJump(Monkey monkey) {
+        if(rand.nextInt(100)==1){
+            System.out.println(monkey.toString() + "jumped");
+            if(monkey.isCanJump()){
+                monkey.setMonkeyVelocity(monkey.getMonkeyVelocity().add(0,-40));
+                monkey.setCanJump(false);
+            }
+        }
+    }
 }

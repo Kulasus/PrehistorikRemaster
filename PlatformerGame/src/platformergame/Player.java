@@ -44,7 +44,4 @@ public class Player{
     public Node getPlayerEntity() {
         return playerEntity;
     }
-    
-    
-    
 }
