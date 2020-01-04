@@ -104,6 +104,7 @@ public class Game {
         boolean movingRight = value > 0;
 
         for (int i = 0; i < Math.abs(value); i++) {
+            //Platforms collision
             for (Node platform : platforms) {
                 if (player.getPlayerEntity().getBoundsInParent().intersects(platform.getBoundsInParent())) {
                     if (movingRight) {
@@ -118,8 +119,33 @@ public class Game {
                     }
                 }
             }
+            
+            //Collectibles collision
+            for (Node collectible : collectibles) {
+                if (player.getPlayerEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())) {
+                    if (movingRight) {
+                        if (player.getPlayerEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                            collectCollectible(collectible);
+                            collectibles.remove(collectible);
+                            score+=100;
+                            scoreboard.setText(setScore());
+                            return;
+                        }
+                    }
+                    else {
+                        if (player.getPlayerEntity().getTranslateX() == collectible.getTranslateX() + 30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                            return;
+                        }
+                    }
+                }
+            }
             player.getPlayerEntity().setTranslateX(player.getPlayerEntity().getTranslateX() + (movingRight ? 1 : -1));
         }
+    }
+    
+    private void collectCollectible(Node collectible){
+        entityCreator.createCollectible((int)collectible.getTranslateX(),(int)collectible.getTranslateY(),30, Color.ALICEBLUE, gamePane);
+        
     }
     
     private void movePlayerY(int value){
