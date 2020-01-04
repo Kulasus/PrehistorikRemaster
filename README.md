@@ -4,11 +4,8 @@ This project is for academical purpose only. I am going to use mainly JavaFX and
 
 # TODO
 1. Create class for Environment Objects(Platforms etc..)
-2. Fix jumping (Player gets stuck when jumping into platform above..vector needs changes)
 3. Add images instad of rectangle fill
 4. Add enemies
-5. Add colectibles
-6. Add score counter
 7. Add end of level
 8. Add player attack
 9. Add main menu
