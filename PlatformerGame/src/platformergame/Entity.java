@@ -44,10 +44,7 @@ public class Entity {
         collectible.setTranslateX(x);
         collectible.setTranslateY(y);
         collectible.setFill(color);
-        Rectangle rect = new Rectangle(1,1);
-        rect.setTranslateX(x);
-        rect.setTranslateY(y);
-        pane.getChildren().addAll(collectible,rect);
+        pane.getChildren().add(collectible);
         return collectible;
     }
     public void createScoreBoard(Pane pane){
