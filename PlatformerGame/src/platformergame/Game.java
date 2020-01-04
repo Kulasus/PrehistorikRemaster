@@ -28,12 +28,11 @@ public class Game {
     private Entity entityCreator;
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
-    private int score = 0;
-    private TextField scoreboard = new TextField();
+    //private int score = 0;
+    private UI ui;
+    //private TextField scoreboard; = new TextField();
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgoundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
-        this.bg = new Rectangle(backgroundWidth, backgroundHeight);
-        this.bg.setFill(backgoundColor);
         this.levelWidth = levelMap[0].length() * 60;
         this.levelMap = levelMap;
         this.entityCreator = entityCreator;
@@ -41,8 +40,9 @@ public class Game {
         this.gamePane = gamePane;
         this.uiPane = uiPane;
         this.player = player;
+        this.bg = entityCreator.createBackground(0, 0, backgroundWidth, backgroundHeight, backgoundColor, appPane);
+        this.ui = new UI();
     }
-    
     public void initContent() throws NullPointerException{
         for (int i=0; i< levelMap.length; i++){
             String line = levelMap[i];
@@ -61,11 +61,7 @@ public class Game {
             }
         }
         
-        scoreboard.setDisable(true);
-        scoreboard.setText(setScore());
-        scoreboard.setAlignment(Pos.CENTER_RIGHT);
-        uiPane.getChildren().add(scoreboard);
-        
+        ui.setScoreboard(uiPane);
         
         player.getPlayerEntity().translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
@@ -73,7 +69,7 @@ public class Game {
                 gamePane.setLayoutX(-(offset-640));
             }
         });
-        appPane.getChildren().addAll(bg, gamePane, uiPane);
+        appPane.getChildren().addAll(gamePane, uiPane);
     }
     
     public void update(){
@@ -92,14 +88,6 @@ public class Game {
         movePlayerY((int)player.getPlayerVelocity().getY());
         System.out.println(player.getPlayerVelocity());
     }
-    
-    public String setScore(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("Your score: ");
-        sb.append(score);
-        return sb.toString();
-    }
-    
     private void movePlayerX(int value) {
         boolean movingRight = value > 0;
 
@@ -127,8 +115,7 @@ public class Game {
                         if (player.getPlayerEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
-                            score+=100;
-                            scoreboard.setText(setScore());
+                            ui.setScore(100);
                             return;
                         }
                     }

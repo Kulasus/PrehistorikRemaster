@@ -29,7 +29,7 @@ public class PlatformerGame extends Application {
     private Pane uiRoot = new Pane();
     private Entity entityCreator = new Entity();
     private Point2D playerVelocity = new Point2D(0, 0);
-    private Player player = new Player(0, 600, 40, 40, Color.BEIGE, gameRoot, playerVelocity, entityCreator);
+    private Player player = new Player(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity, entityCreator);
     private Game game = new Game(1280, 720, Color.AQUA, LevelData.LEVEL1, entityCreator, appRoot, gameRoot, uiRoot, player);
     
     @Override
