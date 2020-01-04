@@ -28,11 +28,9 @@ public class Game {
     private Entity entityCreator;
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
-    //private int score = 0;
     private UI ui;
-    //private TextField scoreboard; = new TextField();
     
-    public Game(int backgroundWidth, int backgroundHeight, Color backgoundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
+    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
         this.levelWidth = levelMap[0].length() * 60;
         this.levelMap = levelMap;
         this.entityCreator = entityCreator;
@@ -40,7 +38,7 @@ public class Game {
         this.gamePane = gamePane;
         this.uiPane = uiPane;
         this.player = player;
-        this.bg = entityCreator.createBackground(0, 0, backgroundWidth, backgroundHeight, backgoundColor, appPane);
+        this.bg = entityCreator.createBackground(0, 0, backgroundWidth, backgroundHeight, backgroundColor, appPane);
         this.ui = new UI();
     }
     public void initContent() throws NullPointerException{
@@ -114,13 +112,14 @@ public class Game {
                     if (movingRight) {
                         if (player.getPlayerEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
                             collectCollectible(collectible);
-                            collectibles.remove(collectible);
                             ui.setScore(100);
                             return;
                         }
                     }
                     else {
                         if (player.getPlayerEntity().getTranslateX() == collectible.getTranslateX() + 30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                            collectCollectible(collectible);
+                            ui.setScore(100);
                             return;
                         }
                     }
@@ -131,13 +130,15 @@ public class Game {
     }
     
     private void collectCollectible(Node collectible){
-        entityCreator.createCollectible((int)collectible.getTranslateX(),(int)collectible.getTranslateY(),30, Color.ALICEBLUE, gamePane);
-        
+        entityCreator.createCollectible((int)collectible.getTranslateX(),(int)collectible.getTranslateY(),30, (Color)bg.getFill() , gamePane);
+        player.getPlayerEntity().toFront();
+        collectibles.remove(collectible);
     }
     
     private void movePlayerY(int value){
         boolean movingDown = value > 0;
         for (int i=0; i < Math.abs(value);i++){
+            //Platforms collision
             for (Node platform : platforms){
                 if(player.getPlayerEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
                     if(movingDown){
@@ -147,6 +148,28 @@ public class Game {
                         }
                     }else {
                         if (player.getPlayerEntity().getTranslateY() == platform.getTranslateY() + 60 && player.getPlayerEntity().getTranslateX() + 40 != platform.getTranslateX()) {
+                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,5));
+                            return;
+                        }
+                    }
+                }
+            }
+            //Colectiblles collision
+            for (Node collectible : collectibles){
+                if(player.getPlayerEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())){
+                    if(movingDown){
+                        if (player.getPlayerEntity().getTranslateY() + 40 == collectible.getTranslateY()-30 && player.getPlayerEntity().getTranslateX() + 40 != collectible.getTranslateX()){
+                            collectCollectible(collectible);
+                            collectibles.remove(collectible);
+                            ui.setScore(100);
+                            player.setCanJump(true);
+                            return;
+                        }
+                    }else {
+                        if (player.getPlayerEntity().getTranslateY() == collectible.getTranslateY() + 30 && player.getPlayerEntity().getTranslateX() + 40 != collectible.getTranslateX()) {
+                            collectCollectible(collectible);
+                            collectibles.remove(collectible);
+                            ui.setScore(100);
                             player.setPlayerVelocity(player.getPlayerVelocity().add(0,5));
                             return;
                         }
