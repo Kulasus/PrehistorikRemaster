@@ -8,7 +8,10 @@ package platformergame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -25,6 +28,8 @@ public class Game {
     private Entity entityCreator;
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
+    private int score = 0;
+    private TextField scoreboard = new TextField();
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgoundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
         this.bg = new Rectangle(backgroundWidth, backgroundHeight);
@@ -55,6 +60,13 @@ public class Game {
                 }
             }
         }
+        
+        scoreboard.setDisable(true);
+        scoreboard.setText(setScore());
+        scoreboard.setAlignment(Pos.CENTER_RIGHT);
+        uiPane.getChildren().add(scoreboard);
+        
+        
         player.getPlayerEntity().translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
             if (offset > 640 && offset < levelWidth-640){
@@ -79,6 +91,13 @@ public class Game {
         }
         movePlayerY((int)player.getPlayerVelocity().getY());
         System.out.println(player.getPlayerVelocity());
+    }
+    
+    public String setScore(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Your score: ");
+        sb.append(score);
+        return sb.toString();
     }
     
     private void movePlayerX(int value) {

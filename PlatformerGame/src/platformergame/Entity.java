@@ -5,7 +5,10 @@
  */
 package platformergame;
 
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -32,5 +35,8 @@ public class Entity {
         collectible.setFill(color);
         pane.getChildren().add(collectible);
         return collectible;
+    }
+    public void createScoreBoard(Pane pane){
+        Label scoreboard = new Label();
     }
 }
