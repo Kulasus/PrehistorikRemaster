@@ -3,9 +3,8 @@ A basic copy of old legendary French game called Prehistorik. It is platformer g
 This project is for academical purpose only. I am going to use mainly JavaFX and NetBeans as my IDE.
 
 # TODO
-1. Create class for Environment Objects(Platforms etc..)
 3. Add images instad of rectangle fill
-4. Add enemies
+4. Add more enemies
 7. Add end of level
 8. Add player attack
 9. Add main menu
