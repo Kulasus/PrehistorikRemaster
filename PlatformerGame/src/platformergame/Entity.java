@@ -20,6 +20,7 @@ import javafx.scene.shape.Rectangle;
  * @author lukas
  */
 public class Entity {
+    
     public Node createEntity(int x, int y, int w, int h, Color color, Pane pane){
         Rectangle entity = new Rectangle(w, h);
         entity.setTranslateX(x);
@@ -28,6 +29,16 @@ public class Entity {
         pane.getChildren().add(entity);
         return entity;
     }
+    
+    public Rectangle createBackground(int x, int y, int w, int h, Color color, Pane pane){
+        Rectangle bg = new Rectangle(w, h);
+        bg.setTranslateX(x);
+        bg.setTranslateY(y);
+        bg.setFill(color);
+        pane.getChildren().add(bg);
+        return bg;
+    }
+
     public Node createCollectible(int x, int y, int r, Color color, Pane pane){
         Circle collectible = new Circle(r);
         collectible.setTranslateX(x);
