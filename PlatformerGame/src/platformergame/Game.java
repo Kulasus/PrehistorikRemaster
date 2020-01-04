@@ -7,7 +7,11 @@ package platformergame;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -17,11 +21,15 @@ public class Game {
     private Player player;
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
     private ArrayList<Node> platforms = new ArrayList<>();
+    private ArrayList<Node> collectibles = new ArrayList<>();
     private Rectangle bg;
     private int levelWidth;
     private String[] levelMap;
     private Entity entityCreator;
     private Pane appPane, gamePane, uiPane;
+    private Point2D nullVector = new Point2D(0,0);
+    private int score = 0;
+    private TextField scoreboard = new TextField();
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgoundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
         this.bg = new Rectangle(backgroundWidth, backgroundHeight);
@@ -46,9 +54,19 @@ public class Game {
                         Node platform = entityCreator.createEntity(j*60, i *60, 60, 60, Color.GREEN, gamePane);
                         platforms.add(platform);
                         break;
+                    case '2':
+                        Node collectible = entityCreator.createCollectible(j*60+30,i*60+30,30,Color.ORANGE,gamePane);
+                        collectibles.add(collectible);
                 }
             }
         }
+        
+        scoreboard.setDisable(true);
+        scoreboard.setText(setScore());
+        scoreboard.setAlignment(Pos.CENTER_RIGHT);
+        uiPane.getChildren().add(scoreboard);
+        
+        
         player.getPlayerEntity().translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
             if (offset > 640 && offset < levelWidth-640){
@@ -60,7 +78,6 @@ public class Game {
     
     public void update(){
         if (isPressed(KeyCode.W) && player.getPlayerEntity().getTranslateY() >= 5){
-            System.out.println("W");
             jumpPlayer();
         }
         if (isPressed(KeyCode.A) && player.getPlayerEntity().getTranslateX() >=5){
@@ -73,12 +90,21 @@ public class Game {
             player.setPlayerVelocity(player.getPlayerVelocity().add(0,1));
         }
         movePlayerY((int)player.getPlayerVelocity().getY());
+        System.out.println(player.getPlayerVelocity());
+    }
+    
+    public String setScore(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Your score: ");
+        sb.append(score);
+        return sb.toString();
     }
     
     private void movePlayerX(int value) {
         boolean movingRight = value > 0;
 
         for (int i = 0; i < Math.abs(value); i++) {
+            //Platforms collision
             for (Node platform : platforms) {
                 if (player.getPlayerEntity().getBoundsInParent().intersects(platform.getBoundsInParent())) {
                     if (movingRight) {
@@ -93,8 +119,33 @@ public class Game {
                     }
                 }
             }
+            
+            //Collectibles collision
+            for (Node collectible : collectibles) {
+                if (player.getPlayerEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())) {
+                    if (movingRight) {
+                        if (player.getPlayerEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                            collectCollectible(collectible);
+                            collectibles.remove(collectible);
+                            score+=100;
+                            scoreboard.setText(setScore());
+                            return;
+                        }
+                    }
+                    else {
+                        if (player.getPlayerEntity().getTranslateX() == collectible.getTranslateX() + 30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                            return;
+                        }
+                    }
+                }
+            }
             player.getPlayerEntity().setTranslateX(player.getPlayerEntity().getTranslateX() + (movingRight ? 1 : -1));
         }
+    }
+    
+    private void collectCollectible(Node collectible){
+        entityCreator.createCollectible((int)collectible.getTranslateX(),(int)collectible.getTranslateY(),30, Color.ALICEBLUE, gamePane);
+        
     }
     
     private void movePlayerY(int value){
@@ -109,6 +160,7 @@ public class Game {
                         }
                     }else {
                         if (player.getPlayerEntity().getTranslateY() == platform.getTranslateY() + 60 && player.getPlayerEntity().getTranslateX() + 40 != platform.getTranslateX()) {
+                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,5));
                             return;
                         }
                     }

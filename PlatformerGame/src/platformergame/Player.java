@@ -19,6 +19,7 @@ public class Player{
     private boolean canJump = true;
     private Node playerEntity;
     
+    
     public Player(int x, int y, int h, int w, Color color, Pane pane, Point2D velocity, Entity entityCreator){
         this.playerEntity = entityCreator.createEntity(x, y, w, h, color, pane);
         this.playerVelocity = velocity;
