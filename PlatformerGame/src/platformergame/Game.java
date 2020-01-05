@@ -16,11 +16,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Game {
-    private Player player;
+    private GameObject player;
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
     private ArrayList<Node> platforms = new ArrayList<>();
     private ArrayList<Node> collectibles = new ArrayList<>();
-    private ArrayList<Monkey> monkeys = new ArrayList<>();
+    private ArrayList<GameObject> monkeys = new ArrayList<>();
     private Rectangle bg;
     private int levelWidth;
     private String[] levelMap;
@@ -30,7 +30,7 @@ public class Game {
     private UI ui;
     private Random rand = new Random();
     
-    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, Player player){
+    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, GameObject player){
         this.levelWidth = levelMap[0].length() * 60;
         this.levelMap = levelMap;
         this.entityCreator = entityCreator;
@@ -57,7 +57,7 @@ public class Game {
                         collectibles.add(collectible);
                         break;
                     case '3':
-                        monkeys.add(new Monkey(j*60,i*60,60,60,Color.RED,gamePane,new Point2D(0, 0),entityCreator));
+                        monkeys.add(new GameObject(j*60,i*60,60,60,Color.RED,gamePane,new Point2D(0, 0),entityCreator));
                 }
             }
         }
@@ -65,7 +65,7 @@ public class Game {
         ui.setScoreboard(uiPane);
         ui.setHealthboard(uiPane);
         
-        player.getPlayerEntity().translateXProperty().addListener((obs, old, newValue) -> {
+        player.getEntity().translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
             if (offset > 640 && offset < levelWidth-640){
                 gamePane.setLayoutX(-(offset-640));
@@ -74,26 +74,26 @@ public class Game {
         appPane.getChildren().addAll(gamePane, uiPane);
     }
     public void update(){
-        if (isPressed(KeyCode.W) && player.getPlayerEntity().getTranslateY() >= 5){
+        if (isPressed(KeyCode.W) && player.getEntity().getTranslateY() >= 5){
             jumpPlayer();
         }
-        if (isPressed(KeyCode.A) && player.getPlayerEntity().getTranslateX() >=5){
+        if (isPressed(KeyCode.A) && player.getEntity().getTranslateX() >=5){
             movePlayerX(-5);
         }
-        if (isPressed(KeyCode.D) && player.getPlayerEntity().getTranslateX() + 40 <=levelWidth-5){
+        if (isPressed(KeyCode.D) && player.getEntity().getTranslateX() + 40 <=levelWidth-5){
             movePlayerX(5);
         }
-        if (player.getPlayerVelocity().getY() < 10){
-            player.setPlayerVelocity(player.getPlayerVelocity().add(0,1));
+        if (player.getVelocity().getY() < 10){
+            player.setVelocity(player.getVelocity().add(0,1));
         }
-        movePlayerY((int)player.getPlayerVelocity().getY());
+        movePlayerY((int)player.getVelocity().getY());
 
-        for (Monkey monkey : monkeys) {
+        for (GameObject monkey : monkeys) {
             monkeyJump(monkey);
-            if (monkey.getMonkeyVelocity().getY() < 10){
-                monkey.setMonkeyVelocity(monkey.getMonkeyVelocity().add(0,1));
+            if (monkey.getVelocity().getY() < 10){
+                monkey.setVelocity(monkey.getVelocity().add(0,1));
             }
-            moveMonkeyY((int)monkey.getMonkeyVelocity().getY(),monkey);
+            moveMonkeyY((int)monkey.getVelocity().getY(),monkey);
         }
     }
     private void movePlayerX(int value) {
@@ -102,14 +102,14 @@ public class Game {
         for (int i = 0; i < Math.abs(value); i++) {
             //Platforms collision
             for (Node platform : platforms) {
-                if (player.getPlayerEntity().getBoundsInParent().intersects(platform.getBoundsInParent())) {
+                if (player.getEntity().getBoundsInParent().intersects(platform.getBoundsInParent())) {
                     if (movingRight) {
-                        if (player.getPlayerEntity().getTranslateX() + 40 == platform.getTranslateX() && player.getPlayerEntity().getTranslateY() + 40 != platform.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() + 40 == platform.getTranslateX() && player.getEntity().getTranslateY() + 40 != platform.getTranslateY()) {
                             return;
                         }
                     }
                     else {
-                        if (player.getPlayerEntity().getTranslateX() == platform.getTranslateX() + 60 && player.getPlayerEntity().getTranslateY() + 40 != platform.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() == platform.getTranslateX() + 60 && player.getEntity().getTranslateY() + 40 != platform.getTranslateY()) {
                             return;
                         }
                     }
@@ -118,16 +118,16 @@ public class Game {
             
             //Collectibles collision
             for (Node collectible : collectibles) {
-                if (player.getPlayerEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())) {
+                if (player.getEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())) {
                     if (movingRight) {
-                        if (player.getPlayerEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
                             collectCollectible(collectible);
                             ui.setScore(100);
                             return;
                         }
                     }
                     else {
-                        if (player.getPlayerEntity().getTranslateX() == collectible.getTranslateX() + 30 && player.getPlayerEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() == collectible.getTranslateX() + 30 && player.getEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
                             collectCollectible(collectible);
                             ui.setScore(100);
                             return;
@@ -138,17 +138,17 @@ public class Game {
             
             
             //Monkey collision
-            for (Monkey monkey : monkeys) {
-                if (player.getPlayerEntity().getBoundsInParent().intersects(monkey.getMonkeyEntity().getBoundsInParent())) {
+            for (GameObject monkey : monkeys) {
+                if (player.getEntity().getBoundsInParent().intersects(monkey.getEntity().getBoundsInParent())) {
                     if (movingRight) {
-                        if (player.getPlayerEntity().getTranslateX() + 40 == monkey.getMonkeyEntity().getTranslateX() && player.getPlayerEntity().getTranslateY() + 40 != monkey.getMonkeyEntity().getTranslateY()) {
+                        if (player.getEntity().getTranslateX() + 40 == monkey.getEntity().getTranslateX() && player.getEntity().getTranslateY() + 40 != monkey.getEntity().getTranslateY()) {
                             ui.setHealth(1);
                             jumpPlayer();
                             return;
                         }
                     }
                     else {
-                        if (player.getPlayerEntity().getTranslateX() == monkey.getMonkeyEntity().getTranslateX() + 60 && player.getPlayerEntity().getTranslateY() + 40 != monkey.getMonkeyEntity().getTranslateY()) {
+                        if (player.getEntity().getTranslateX() == monkey.getEntity().getTranslateX() + 60 && player.getEntity().getTranslateY() + 40 != monkey.getEntity().getTranslateY()) {
                             ui.setHealth(1);
                             jumpPlayer();
                             return;
@@ -157,13 +157,13 @@ public class Game {
                 }
             }
             
-            player.getPlayerEntity().setTranslateX(player.getPlayerEntity().getTranslateX() + (movingRight ? 1 : -1));
+            player.getEntity().setTranslateX(player.getEntity().getTranslateX() + (movingRight ? 1 : -1));
         }
     }
     
     private void collectCollectible(Node collectible){
         entityCreator.createCollectible((int)collectible.getTranslateX(),(int)collectible.getTranslateY(),30, (Color)bg.getFill() , gamePane);
-        player.getPlayerEntity().toFront();
+        player.getEntity().toFront();
         collectibles.remove(collectible);
     }
     
@@ -172,15 +172,15 @@ public class Game {
         for (int i=0; i < Math.abs(value);i++){
             //Platforms collision
             for (Node platform : platforms){
-                if(player.getPlayerEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
+                if(player.getEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
                     if(movingDown){
-                        if (player.getPlayerEntity().getTranslateY() + 40 == platform.getTranslateY() && player.getPlayerEntity().getTranslateX() + 40 != platform.getTranslateX()){
+                        if (player.getEntity().getTranslateY() + 40 == platform.getTranslateY() && player.getEntity().getTranslateX() + 40 != platform.getTranslateX()){
                             player.setCanJump(true);
                             return;
                         }
                     }else {
-                        if (player.getPlayerEntity().getTranslateY() == platform.getTranslateY() + 60 && player.getPlayerEntity().getTranslateX() + 40 != platform.getTranslateX()) {
-                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,5));
+                        if (player.getEntity().getTranslateY() == platform.getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != platform.getTranslateX()) {
+                            player.setVelocity(player.getVelocity().add(0,5));
                             return;
                         }
                     }
@@ -188,9 +188,9 @@ public class Game {
             }
             //Colectiblles collision
             for (Node collectible : collectibles){
-                if(player.getPlayerEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())){
+                if(player.getEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())){
                     if(movingDown){
-                        if (player.getPlayerEntity().getTranslateY() + 40 == collectible.getTranslateY()-30 && player.getPlayerEntity().getTranslateX() + 40 != collectible.getTranslateX()){
+                        if (player.getEntity().getTranslateY() + 40 == collectible.getTranslateY()-30 && player.getEntity().getTranslateX() + 40 != collectible.getTranslateX()){
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
                             ui.setScore(100);
@@ -198,11 +198,11 @@ public class Game {
                             return;
                         }
                     }else {
-                        if (player.getPlayerEntity().getTranslateY() == collectible.getTranslateY() + 30 && player.getPlayerEntity().getTranslateX() + 40 != collectible.getTranslateX()) {
+                        if (player.getEntity().getTranslateY() == collectible.getTranslateY() + 30 && player.getEntity().getTranslateX() + 40 != collectible.getTranslateX()) {
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
                             ui.setScore(100);
-                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,5));
+                            player.setVelocity(player.getVelocity().add(0,5));
                             return;
                         }
                     }
@@ -210,31 +210,31 @@ public class Game {
             }
             
             //Monkey collision
-            for (Monkey monkey : monkeys){
-                if(player.getPlayerEntity().getBoundsInParent().intersects(monkey.getMonkeyEntity().getBoundsInParent())){
+            for (GameObject monkey : monkeys){
+                if(player.getEntity().getBoundsInParent().intersects(monkey.getEntity().getBoundsInParent())){
                     if(movingDown){
-                        if (player.getPlayerEntity().getTranslateY() + 40 == monkey.getMonkeyEntity().getTranslateY() && player.getPlayerEntity().getTranslateX() + 40 != monkey.getMonkeyEntity().getTranslateX()){
+                        if (player.getEntity().getTranslateY() + 40 == monkey.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()){
                             ui.setHealth(1);
-                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,-30));
+                            player.setVelocity(player.getVelocity().add(0,-30));
                             return;
                         }
                     }else {
-                        if (player.getPlayerEntity().getTranslateY() == monkey.getMonkeyEntity().getTranslateY() + 60 && player.getPlayerEntity().getTranslateX() + 40 != monkey.getMonkeyEntity().getTranslateX()) {
+                        if (player.getEntity().getTranslateY() == monkey.getEntity().getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()) {
                             ui.setHealth(1);
-                            player.setPlayerVelocity(player.getPlayerVelocity().add(0,20));
+                            player.setVelocity(player.getVelocity().add(0,20));
                             return;
                         }
                     }
                 }
             }
             player.setCanJump(false);
-            player.getPlayerEntity().setTranslateY(player.getPlayerEntity().getTranslateY() + (movingDown ? 1 : -1));
+            player.getEntity().setTranslateY(player.getEntity().getTranslateY() + (movingDown ? 1 : -1));
         }
     }
     
     private void jumpPlayer(){
         if(player.isCanJump()){
-            player.setPlayerVelocity(player.getPlayerVelocity().add(0,-30));
+            player.setVelocity(player.getVelocity().add(0,-30));
             player.setCanJump(false);
         }
     }
@@ -243,7 +243,7 @@ public class Game {
         return keys.getOrDefault(key, false);
     }
 
-    public Player getPlayer() {
+    public GameObject getPlayer() {
         return player;
     }
 
@@ -263,36 +263,36 @@ public class Game {
         return levelWidth;
     }    
 
-    private void moveMonkeyY(int value, Monkey monkey) {
+    private void moveMonkeyY(int value, GameObject monkey) {
         boolean movingDown = value >= 0;
         for (int i=0; i < Math.abs(value);i++){
             //Platforms collision
             for (Node platform : platforms){
                 //System.out.println(monkey.toString() + "crashed");
-                if(monkey.getMonkeyEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
+                if(monkey.getEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
                     if(movingDown){
-                        if (monkey.getMonkeyEntity().getTranslateY() + 60 == platform.getTranslateY() && monkey.getMonkeyEntity().getTranslateX() + 60 != platform.getTranslateX()){
+                        if (monkey.getEntity().getTranslateY() + 60 == platform.getTranslateY() && monkey.getEntity().getTranslateX() + 60 != platform.getTranslateX()){
                             monkey.setCanJump(true);
                             return;
                         }
                     }else {
-                        if (monkey.getMonkeyEntity().getTranslateY() == platform.getTranslateY() + 60 && monkey.getMonkeyEntity().getTranslateX() + 60 != platform.getTranslateX()) {
-                            monkey.setMonkeyVelocity(monkey.getMonkeyVelocity().add(0,5));
+                        if (monkey.getEntity().getTranslateY() == platform.getTranslateY() + 60 && monkey.getEntity().getTranslateX() + 60 != platform.getTranslateX()) {
+                            monkey.setVelocity(monkey.getVelocity().add(0,5));
                             return;
                         }
                     }
                 }
             }
             monkey.setCanJump(false);
-            monkey.getMonkeyEntity().setTranslateY(monkey.getMonkeyEntity().getTranslateY() + (movingDown ? 1 : -1));
+            monkey.getEntity().setTranslateY(monkey.getEntity().getTranslateY() + (movingDown ? 1 : -1));
         }   
     }
 
-    private void monkeyJump(Monkey monkey) {
+    private void monkeyJump(GameObject monkey) {
         if(rand.nextInt(100)==1){
             System.out.println(monkey.toString() + "jumped");
             if(monkey.isCanJump()){
-                monkey.setMonkeyVelocity(monkey.getMonkeyVelocity().add(0,-40));
+                monkey.setVelocity(monkey.getVelocity().add(0,-40));
                 monkey.setCanJump(false);
             }
         }
