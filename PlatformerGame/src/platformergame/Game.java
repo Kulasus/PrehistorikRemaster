@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -174,12 +173,12 @@ public class Game {
             for (RectangleObject platform : platforms){
                 if(player.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())){
                     if(movingDown){
-                        if (player.getEntity().getTranslateY() + 40 == platform.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX()){
+                        if (player.getEntity().getTranslateY() + 40 == platform.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX() && player.getEntity().getTranslateX() != platform.getEntity().getTranslateX()+60){
                             player.setCanJump(true);
                             return;
                         }
                     }else {
-                        if (player.getEntity().getTranslateY() == platform.getEntity().getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX()) {
+                        if (player.getEntity().getTranslateY() == platform.getEntity().getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX() && player.getEntity().getTranslateX() != platform.getEntity().getTranslateX()+60) {
                             player.setVelocity(player.getVelocity().add(0,5));
                             return;
                         }
