@@ -16,29 +16,29 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class Game {
-    private GameObject player;
+    private RectangleObject player;
     private HashMap<KeyCode, Boolean> keys = new HashMap<KeyCode, Boolean>();
-    private ArrayList<Node> platforms = new ArrayList<>();
-    private ArrayList<Node> collectibles = new ArrayList<>();
-    private ArrayList<GameObject> monkeys = new ArrayList<>();
+    private ArrayList<RectangleObject> platforms = new ArrayList<>();
+    private ArrayList<CollectibleObject> collectibles = new ArrayList<>();
+    private ArrayList<RectangleObject> monkeys = new ArrayList<>();
     private Rectangle bg;
     private int levelWidth;
     private String[] levelMap;
-    private Entity entityCreator;
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
     private UI ui;
     private Random rand = new Random();
     
-    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Entity entityCreator, Pane appPane, Pane gamePane, Pane uiPane, GameObject player){
+    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player){
         this.levelWidth = levelMap[0].length() * 60;
         this.levelMap = levelMap;
-        this.entityCreator = entityCreator;
         this.appPane = appPane;
         this.gamePane = gamePane;
         this.uiPane = uiPane;
         this.player = player;
-        this.bg = entityCreator.createBackground(0, 0, backgroundWidth, backgroundHeight, backgroundColor, appPane);
+        this.bg = new Rectangle(backgroundWidth,backgroundHeight);
+        this.bg.setFill(backgroundColor);
+        this.appPane.getChildren().add(bg);
         this.ui = new UI();
     }
     public void initContent() throws NullPointerException{
@@ -49,15 +49,15 @@ public class Game {
                     case '0':
                         break;
                     case '1':
-                        Node platform = entityCreator.createEntity(j*60, i *60, 60, 60, Color.GREEN, gamePane);
+                        RectangleObject platform = new RectangleObject(j*60, i *60, 60, 60, Color.GREEN, gamePane, nullVector);
                         platforms.add(platform);
                         break;
                     case '2':
-                        Node collectible = entityCreator.createCollectible(j*60+30,i*60+30,30,Color.ORANGE,gamePane);
+                        CollectibleObject collectible = new CollectibleObject(j*60+30,i*60+30,30,Color.ORANGE,gamePane,nullVector);
                         collectibles.add(collectible);
                         break;
                     case '3':
-                        monkeys.add(new GameObject(j*60,i*60,60,60,Color.RED,gamePane,new Point2D(0, 0),entityCreator));
+                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.RED,gamePane,new Point2D(0, 0)));
                 }
             }
         }
@@ -88,7 +88,7 @@ public class Game {
         }
         movePlayerY((int)player.getVelocity().getY());
 
-        for (GameObject monkey : monkeys) {
+        for (RectangleObject monkey : monkeys) {
             monkeyJump(monkey);
             if (monkey.getVelocity().getY() < 10){
                 monkey.setVelocity(monkey.getVelocity().add(0,1));
@@ -101,15 +101,15 @@ public class Game {
 
         for (int i = 0; i < Math.abs(value); i++) {
             //Platforms collision
-            for (Node platform : platforms) {
-                if (player.getEntity().getBoundsInParent().intersects(platform.getBoundsInParent())) {
+            for (RectangleObject platform : platforms) {
+                if (player.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())) {
                     if (movingRight) {
-                        if (player.getEntity().getTranslateX() + 40 == platform.getTranslateX() && player.getEntity().getTranslateY() + 40 != platform.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() + 40 == platform.getEntity().getTranslateX() && player.getEntity().getTranslateY() + 40 != platform.getEntity().getTranslateY()) {
                             return;
                         }
                     }
                     else {
-                        if (player.getEntity().getTranslateX() == platform.getTranslateX() + 60 && player.getEntity().getTranslateY() + 40 != platform.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() == platform.getEntity().getTranslateX() + 60 && player.getEntity().getTranslateY() + 40 != platform.getEntity().getTranslateY()) {
                             return;
                         }
                     }
@@ -117,17 +117,17 @@ public class Game {
             }
             
             //Collectibles collision
-            for (Node collectible : collectibles) {
-                if (player.getEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())) {
+            for (CollectibleObject collectible : collectibles) {
+                if (player.getEntity().getBoundsInParent().intersects(collectible.getEntity().getBoundsInParent())) {
                     if (movingRight) {
-                        if (player.getEntity().getTranslateX() + 40 == collectible.getTranslateX()-30 && player.getEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() + 40 == collectible.getEntity().getTranslateX()-30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
                             ui.setScore(100);
                             return;
                         }
                     }
                     else {
-                        if (player.getEntity().getTranslateX() == collectible.getTranslateX() + 30 && player.getEntity().getTranslateY() + 40 != collectible.getTranslateY()) {
+                        if (player.getEntity().getTranslateX() == collectible.getEntity().getTranslateX() + 30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
                             ui.setScore(100);
                             return;
@@ -138,7 +138,7 @@ public class Game {
             
             
             //Monkey collision
-            for (GameObject monkey : monkeys) {
+            for (RectangleObject monkey : monkeys) {
                 if (player.getEntity().getBoundsInParent().intersects(monkey.getEntity().getBoundsInParent())) {
                     if (movingRight) {
                         if (player.getEntity().getTranslateX() + 40 == monkey.getEntity().getTranslateX() && player.getEntity().getTranslateY() + 40 != monkey.getEntity().getTranslateY()) {
@@ -161,8 +161,8 @@ public class Game {
         }
     }
     
-    private void collectCollectible(Node collectible){
-        entityCreator.createCollectible((int)collectible.getTranslateX(),(int)collectible.getTranslateY(),30, (Color)bg.getFill() , gamePane);
+    private void collectCollectible(CollectibleObject collectible){
+        CollectibleObject newCol = new CollectibleObject((int)collectible.getEntity().getTranslateX(),(int)collectible.getEntity().getTranslateY(),30, (Color)bg.getFill() , gamePane, nullVector);
         player.getEntity().toFront();
         collectibles.remove(collectible);
     }
@@ -171,15 +171,15 @@ public class Game {
         boolean movingDown = value > 0;
         for (int i=0; i < Math.abs(value);i++){
             //Platforms collision
-            for (Node platform : platforms){
-                if(player.getEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
+            for (RectangleObject platform : platforms){
+                if(player.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())){
                     if(movingDown){
-                        if (player.getEntity().getTranslateY() + 40 == platform.getTranslateY() && player.getEntity().getTranslateX() + 40 != platform.getTranslateX()){
+                        if (player.getEntity().getTranslateY() + 40 == platform.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX()){
                             player.setCanJump(true);
                             return;
                         }
                     }else {
-                        if (player.getEntity().getTranslateY() == platform.getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != platform.getTranslateX()) {
+                        if (player.getEntity().getTranslateY() == platform.getEntity().getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX()) {
                             player.setVelocity(player.getVelocity().add(0,5));
                             return;
                         }
@@ -187,10 +187,10 @@ public class Game {
                 }
             }
             //Colectiblles collision
-            for (Node collectible : collectibles){
-                if(player.getEntity().getBoundsInParent().intersects(collectible.getBoundsInParent())){
+            for (CollectibleObject collectible : collectibles){
+                if(player.getEntity().getBoundsInParent().intersects(collectible.getEntity().getBoundsInParent())){
                     if(movingDown){
-                        if (player.getEntity().getTranslateY() + 40 == collectible.getTranslateY()-30 && player.getEntity().getTranslateX() + 40 != collectible.getTranslateX()){
+                        if (player.getEntity().getTranslateY() + 40 == collectible.getEntity().getTranslateY()-30 && player.getEntity().getTranslateX() + 40 != collectible.getEntity().getTranslateX()){
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
                             ui.setScore(100);
@@ -198,7 +198,7 @@ public class Game {
                             return;
                         }
                     }else {
-                        if (player.getEntity().getTranslateY() == collectible.getTranslateY() + 30 && player.getEntity().getTranslateX() + 40 != collectible.getTranslateX()) {
+                        if (player.getEntity().getTranslateY() == collectible.getEntity().getTranslateY() + 30 && player.getEntity().getTranslateX() + 40 != collectible.getEntity().getTranslateX()) {
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
                             ui.setScore(100);
@@ -210,7 +210,7 @@ public class Game {
             }
             
             //Monkey collision
-            for (GameObject monkey : monkeys){
+            for (RectangleObject monkey : monkeys){
                 if(player.getEntity().getBoundsInParent().intersects(monkey.getEntity().getBoundsInParent())){
                     if(movingDown){
                         if (player.getEntity().getTranslateY() + 40 == monkey.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()){
@@ -251,7 +251,7 @@ public class Game {
         return keys;
     }
 
-    public ArrayList<Node> getPlatforms() {
+    public ArrayList<RectangleObject> getPlatforms() {
         return platforms;
     }
 
@@ -263,20 +263,20 @@ public class Game {
         return levelWidth;
     }    
 
-    private void moveMonkeyY(int value, GameObject monkey) {
+    private void moveMonkeyY(int value, RectangleObject monkey) {
         boolean movingDown = value >= 0;
         for (int i=0; i < Math.abs(value);i++){
             //Platforms collision
-            for (Node platform : platforms){
+            for (RectangleObject platform : platforms){
                 //System.out.println(monkey.toString() + "crashed");
-                if(monkey.getEntity().getBoundsInParent().intersects(platform.getBoundsInParent())){
+                if(monkey.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())){
                     if(movingDown){
-                        if (monkey.getEntity().getTranslateY() + 60 == platform.getTranslateY() && monkey.getEntity().getTranslateX() + 60 != platform.getTranslateX()){
+                        if (monkey.getEntity().getTranslateY() + 60 == platform.getEntity().getTranslateY() && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX()){
                             monkey.setCanJump(true);
                             return;
                         }
                     }else {
-                        if (monkey.getEntity().getTranslateY() == platform.getTranslateY() + 60 && monkey.getEntity().getTranslateX() + 60 != platform.getTranslateX()) {
+                        if (monkey.getEntity().getTranslateY() == platform.getEntity().getTranslateY() + 60 && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX()) {
                             monkey.setVelocity(monkey.getVelocity().add(0,5));
                             return;
                         }

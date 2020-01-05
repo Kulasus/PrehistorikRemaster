@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 /**
  *
@@ -17,21 +18,31 @@ import javafx.scene.paint.Color;
 public class GameObject {
     private Point2D velocity;
     private boolean canJump = true;
-    private Node entity;
+    private int x;
+    private int y;
+    private Color color;
 
-    public GameObject(int x, int y, int h, int w, Color color, Pane pane, Point2D velocity, Entity entityCreator){
-        this.entity = entityCreator.createEntity(x, y, w, h, color, pane);
+    public GameObject(int x, int y, Color color, Point2D velocity){
         this.velocity = velocity;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        /*
+        Rectangle body = new Rectangle(w,h);
+        body.setTranslateX(x);
+        body.setTranslateY(y);
+        body.setFill(color);
+        this.entity = body;        
+        pane.getChildren().add(this.entity);
+*/
     }
+    
+    
 
     public boolean isCanJump() {
         return canJump;
     }
-
-    public Node getEntity() {
-        return entity;
-    }
-
+    
     public Point2D getVelocity() {
         return velocity;
     }

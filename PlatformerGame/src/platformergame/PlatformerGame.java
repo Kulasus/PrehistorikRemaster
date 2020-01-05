@@ -27,10 +27,9 @@ public class PlatformerGame extends Application {
     private Pane appRoot = new Pane();
     private Pane gameRoot = new Pane();
     private Pane uiRoot = new Pane();
-    private Entity entityCreator = new Entity();
     private Point2D playerVelocity = new Point2D(0, 0);
-    private GameObject player = new GameObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity, entityCreator);
-    private Game game = new Game(1280, 720, Color.AQUA, LevelData.LEVEL1, entityCreator, appRoot, gameRoot, uiRoot, player);
+    private RectangleObject player = new RectangleObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity);
+    private Game game = new Game(1280, 720, Color.AQUA, LevelData.LEVEL1, appRoot, gameRoot, uiRoot, player);
     
     @Override
     public void start(Stage primaryStage) throws Exception{
