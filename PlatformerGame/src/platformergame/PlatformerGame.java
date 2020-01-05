@@ -7,19 +7,11 @@ package platformergame;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.logging.Level;
 
 
 public class PlatformerGame extends Application {
