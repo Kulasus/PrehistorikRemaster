@@ -20,7 +20,7 @@ public class PlatformerGame extends Application {
     private Pane gameRoot = new Pane();
     private Pane uiRoot = new Pane();
     private Point2D playerVelocity = new Point2D(0, 0);
-    private RectangleObject player = new RectangleObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity,3);
+    private RectangleObject player = new RectangleObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity,10);
     private boolean gameRuns = true;
     
     @Override

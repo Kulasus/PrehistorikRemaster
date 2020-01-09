@@ -19,6 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.animation.RotateTransition;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 public class Game {
     private RectangleObject player;
@@ -33,8 +36,9 @@ public class Game {
     private UI ui;
     private Random rand = new Random();
     private boolean gameEnded = false;
-    private int backgroundHeight, backgroundWidth, levelWidth;
+    private int backgroundHeight, backgroundWidth, levelWidth, maxScore = 0;
     private Stage primaryStage;
+    private RotateTransition monkeyRotator = new RotateTransition();
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player, Stage primaryStage){
         this.levelWidth = levelMap[0].length() * 60;
@@ -51,6 +55,10 @@ public class Game {
         this.appPane.getChildren().add(bg);
         this.ui = new UI();
         this.primaryStage = primaryStage;
+        this.monkeyRotator.setAxis(Rotate.Z_AXIS);
+        this.monkeyRotator.setByAngle(360);
+        this.monkeyRotator.setCycleCount(1);
+        this.monkeyRotator.setDuration(Duration.millis(1000));  
     }
     public void initContent(){
         gameEnded = false;
@@ -67,9 +75,11 @@ public class Game {
                     case '2':
                         CollectibleObject collectible = new CollectibleObject(j*60+30,i*60+30,30,Color.ORANGE,gamePane,nullVector);
                         collectibles.add(collectible);
+                        maxScore+=100;
                         break;
                     case '3':
-                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 2));
+                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 20));
+                        maxScore+=50;
                 }
             }
         }
@@ -85,7 +95,7 @@ public class Game {
         });
         appPane.getChildren().addAll(gamePane, uiPane);
     }
-    public void initEndGame(){
+    public void initLostEndGame(){
         Label endGameTitleLabel = new Label();
         endGameTitleLabel.setText("You died!");
         endGameTitleLabel.setTextFill(Color.RED);
@@ -94,8 +104,24 @@ public class Game {
         endGameTitleLabel.setMaxHeight(backgroundHeight/2);
         endGameTitleLabel.setTranslateX(backgroundWidth / 2 - endGameTitleLabel.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
         endGameTitleLabel.setTranslateY(backgroundHeight / 2 - endGameTitleLabel.getMaxHeight() /4);
-
         
+        gamePane.getChildren().add(endGameTitleLabel);
+    }
+    
+    public void initWonEndGame(){
+        Label endGameTitleLabel = new Label();
+        endGameTitleLabel.setText("You won!");
+        endGameTitleLabel.setTextFill(Color.RED);
+        endGameTitleLabel.setFont(new Font("Arial",150));
+        endGameTitleLabel.setMaxWidth(backgroundWidth/2);
+        endGameTitleLabel.setMaxHeight(backgroundHeight/2);
+        endGameTitleLabel.setTranslateX(backgroundWidth / 2 - endGameTitleLabel.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
+        endGameTitleLabel.setTranslateY(backgroundHeight / 2 - endGameTitleLabel.getMaxHeight() /4);
+        
+        gamePane.getChildren().add(endGameTitleLabel);
+    }
+    
+    public void initEndGame(){
         Label endGameScoreLabel = new Label();
         endGameScoreLabel.setText(ui.getFinalScore());
         endGameScoreLabel.setTextFill(Color.YELLOW);
@@ -103,7 +129,6 @@ public class Game {
         endGameScoreLabel.setMaxHeight(backgroundWidth/20);
         endGameScoreLabel.setTranslateX(Math.abs(gamePane.getLayoutX()));
         endGameScoreLabel.setTranslateY(backgroundHeight - endGameScoreLabel.getMaxHeight());
-        
         
         Button endGameButton = new Button();
         endGameButton.setText("Close");
@@ -118,23 +143,18 @@ public class Game {
                 primaryStage.close();
             }
         });
-        
-
-        
-        gamePane.getChildren().addAll(endGameTitleLabel,endGameScoreLabel, endGameButton);
-        
+        gamePane.getChildren().addAll(endGameScoreLabel, endGameButton);
     }
-    
-    
-    
     public void update(){
-        //Game end
-        if(gameEnded){
-            
-        }
-        else{
+        if(!gameEnded){
             //Game ended check
             if(player.getHealth() <= 0){
+                initLostEndGame();
+                initEndGame();
+                gameEnded = true;
+            }
+            if(maxScore == ui.getScore()){
+                initWonEndGame();
                 initEndGame();
                 gameEnded = true;
             }
@@ -147,6 +167,10 @@ public class Game {
             }
             if (isPressed(KeyCode.D) && player.getEntity().getTranslateX() + 40 <=levelWidth-5){
                 movePlayerX(5);
+            }
+            if (isPressed(KeyCode.SPACE) && player.getEntity().getTranslateX() >=20 && player.getEntity().getTranslateX() + 40 <= levelWidth-20)
+            {
+                attackPlayer();
             }
 
             //Gravity
@@ -163,11 +187,6 @@ public class Game {
                 moveMonkeyY((int)monkey.getVelocity().getY(),monkey);
             }
         }
-        
-        
-        
-        
-        
     }
     private void movePlayerX(int value) {
         boolean movingRight = value > 0;
@@ -195,6 +214,8 @@ public class Game {
                     if (movingRight) {
                         if (player.getEntity().getTranslateX() + 40 == collectible.getEntity().getTranslateX()-30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
+                            player.setHealth(player.getHealth()+5);
+                            ui.setHealth(player);
                             ui.setScore(100);
                             return;
                         }
@@ -202,6 +223,7 @@ public class Game {
                     else {
                         if (player.getEntity().getTranslateX() == collectible.getEntity().getTranslateX() + 30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
+                            ui.setHealth(player);
                             ui.setScore(100);
                             return;
                         }
@@ -365,13 +387,40 @@ public class Game {
         }   
     }
 
-    private void monkeyJump(GameObject monkey) {
+    private void monkeyJump(RectangleObject monkey) {
         if(rand.nextInt(100)==1){
-            System.out.println(monkey.toString() + "jumped");
             if(monkey.isCanJump()){
                 monkey.setVelocity(monkey.getVelocity().add(0,-40));
+                monkeyRotator.setNode(monkey.getEntity());
+                monkeyRotator.play();
                 monkey.setCanJump(false);
             }
         }
+    }
+
+    private void attackPlayer() {
+        for(RectangleObject monkey : monkeys){
+            //attack from left
+            if(player.getEntity().getTranslateX()+20+40 >= monkey.getEntity().getTranslateX() && player.getEntity().getTranslateX()+20+40 <= monkey.getEntity().getTranslateX()+20){
+                monkey.setHealth(monkey.getHealth()-1);
+                if(monkey.getHealth() <= 0){
+                    monkeyDie(monkey);
+                    ui.setScore(50);
+                }
+            }   
+            //attack from right
+            else if(player.getEntity().getTranslateX()-20 <= monkey.getEntity().getTranslateX()+60 && player.getEntity().getTranslateX()-20 >= monkey.getEntity().getTranslateX()-20+60){
+                monkey.setHealth(monkey.getHealth()-1);
+                if(monkey.getHealth() <= 0){
+                    monkeyDie(monkey);
+                    ui.setScore(50);
+                }
+            }
+        }
+    }
+    private void monkeyDie(RectangleObject monkey) {
+        RectangleObject newMonkey = new RectangleObject((int)monkey.getEntity().getTranslateX(),(int)monkey.getEntity().getTranslateY(),60,60,(Color)bg.getFill(),gamePane,nullVector,1);
+        player.getEntity().toFront();
+        monkeys.remove(monkey);
     }
 }
