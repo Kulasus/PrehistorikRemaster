@@ -22,7 +22,7 @@ public class PlatformerGame extends Application {
     private Pane gameRoot = new Pane();
     private Pane uiRoot = new Pane();
     private Point2D playerVelocity = new Point2D(0, 0);
-    private RectangleObject player = new RectangleObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity,10, new ImagePattern(new Image("sprites/player_normal.png")));
+    private RectangleObject player = new RectangleObject(0, 600, 40, 40, new ImagePattern(new Image("sprites/player_normal.png")), gameRoot, playerVelocity,10);
     private boolean gameRuns = true;
     
     @Override

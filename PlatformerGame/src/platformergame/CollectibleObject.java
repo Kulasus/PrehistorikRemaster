@@ -6,9 +6,8 @@
 package platformergame;
 
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
 import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 
 /**
@@ -17,19 +16,19 @@ import javafx.scene.shape.Circle;
  */
 public class CollectibleObject extends GameObject{
     int r;
-    private Node entity;
-    public CollectibleObject(int x, int y, int r, Color color, Pane pane, Point2D velocity){
-        super(x,y,color,velocity);
+    private Circle entity;
+    public CollectibleObject(int x, int y, int r, ImagePattern imgPattern, Pane pane, Point2D velocity){
+        super(x,y,imgPattern,velocity);
         this.r = r;
         Circle collectible = new Circle(r);
         collectible.setTranslateX(x);
         collectible.setTranslateY(y);
-        collectible.setFill(color);
+        collectible.setFill(imgPattern);
         this.entity = collectible;
         pane.getChildren().add(this.entity);
     }
 
-    public Node getEntity() {
+    public Circle getEntity() {
         return entity;
     }
     
