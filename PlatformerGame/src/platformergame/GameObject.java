@@ -7,6 +7,7 @@ package platformergame;
 
 import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 
 /**
  *
@@ -18,7 +19,7 @@ public class GameObject {
     private int x;
     private int y;
     private Color color;
-
+    
     public GameObject(int x, int y, Color color, Point2D velocity){
         this.velocity = velocity;
         this.x = x;
@@ -40,6 +41,14 @@ public class GameObject {
 
     public void setCanJump(boolean canJump) {
         this.canJump = canJump;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
     
 }

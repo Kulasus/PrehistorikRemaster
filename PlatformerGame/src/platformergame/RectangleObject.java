@@ -9,6 +9,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -32,7 +33,19 @@ public class RectangleObject extends GameObject{
         this.entity = body;        
         pane.getChildren().add(this.entity);
     }
-
+    public RectangleObject(int x, int y, int h, int w, Color color, Pane pane, Point2D velocity, int health, ImagePattern image){
+        super(x,y,color,velocity);
+        this.w = w;
+        this.h = h;
+        this.health = health;
+        Rectangle body = new Rectangle(w,h);
+        body.setTranslateX(x);
+        body.setTranslateY(y);
+        body.setFill(image);
+        this.entity = body;        
+        pane.getChildren().add(this.entity);
+    }
+        
     public Node getEntity() {
         return entity;
     }
