@@ -36,7 +36,7 @@ public class Game {
     private UI ui;
     private Random rand = new Random();
     private boolean gameEnded = false;
-    private int backgroundHeight, backgroundWidth, levelWidth;
+    private int backgroundHeight, backgroundWidth, levelWidth, maxScore = 0;
     private Stage primaryStage;
     private RotateTransition monkeyRotator = new RotateTransition();
     
@@ -75,9 +75,11 @@ public class Game {
                     case '2':
                         CollectibleObject collectible = new CollectibleObject(j*60+30,i*60+30,30,Color.ORANGE,gamePane,nullVector);
                         collectibles.add(collectible);
+                        maxScore+=100;
                         break;
                     case '3':
                         monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 20));
+                        maxScore+=50;
                 }
             }
         }
@@ -93,7 +95,7 @@ public class Game {
         });
         appPane.getChildren().addAll(gamePane, uiPane);
     }
-    public void initEndGame(){
+    public void initLostEndGame(){
         Label endGameTitleLabel = new Label();
         endGameTitleLabel.setText("You died!");
         endGameTitleLabel.setTextFill(Color.RED);
@@ -102,8 +104,24 @@ public class Game {
         endGameTitleLabel.setMaxHeight(backgroundHeight/2);
         endGameTitleLabel.setTranslateX(backgroundWidth / 2 - endGameTitleLabel.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
         endGameTitleLabel.setTranslateY(backgroundHeight / 2 - endGameTitleLabel.getMaxHeight() /4);
-
         
+        gamePane.getChildren().add(endGameTitleLabel);
+    }
+    
+    public void initWonEndGame(){
+        Label endGameTitleLabel = new Label();
+        endGameTitleLabel.setText("You won!");
+        endGameTitleLabel.setTextFill(Color.RED);
+        endGameTitleLabel.setFont(new Font("Arial",150));
+        endGameTitleLabel.setMaxWidth(backgroundWidth/2);
+        endGameTitleLabel.setMaxHeight(backgroundHeight/2);
+        endGameTitleLabel.setTranslateX(backgroundWidth / 2 - endGameTitleLabel.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
+        endGameTitleLabel.setTranslateY(backgroundHeight / 2 - endGameTitleLabel.getMaxHeight() /4);
+        
+        gamePane.getChildren().add(endGameTitleLabel);
+    }
+    
+    public void initEndGame(){
         Label endGameScoreLabel = new Label();
         endGameScoreLabel.setText(ui.getFinalScore());
         endGameScoreLabel.setTextFill(Color.YELLOW);
@@ -111,7 +129,6 @@ public class Game {
         endGameScoreLabel.setMaxHeight(backgroundWidth/20);
         endGameScoreLabel.setTranslateX(Math.abs(gamePane.getLayoutX()));
         endGameScoreLabel.setTranslateY(backgroundHeight - endGameScoreLabel.getMaxHeight());
-        
         
         Button endGameButton = new Button();
         endGameButton.setText("Close");
@@ -126,12 +143,18 @@ public class Game {
                 primaryStage.close();
             }
         });
-        gamePane.getChildren().addAll(endGameTitleLabel,endGameScoreLabel, endGameButton);
+        gamePane.getChildren().addAll(endGameScoreLabel, endGameButton);
     }
     public void update(){
         if(!gameEnded){
             //Game ended check
             if(player.getHealth() <= 0){
+                initLostEndGame();
+                initEndGame();
+                gameEnded = true;
+            }
+            if(maxScore == ui.getScore()){
+                initWonEndGame();
                 initEndGame();
                 gameEnded = true;
             }
