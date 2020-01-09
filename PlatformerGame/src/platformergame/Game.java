@@ -8,11 +8,17 @@ package platformergame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.stage.Stage;
 
 public class Game {
     private RectangleObject player;
@@ -21,26 +27,33 @@ public class Game {
     private ArrayList<CollectibleObject> collectibles = new ArrayList<>();
     private ArrayList<RectangleObject> monkeys = new ArrayList<>();
     private Rectangle bg;
-    private int levelWidth;
     private String[] levelMap;
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
     private UI ui;
     private Random rand = new Random();
+    private boolean gameEnded = false;
+    private int backgroundHeight, backgroundWidth, levelWidth;
+    private Stage primaryStage;
     
-    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player){
+    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player, Stage primaryStage){
         this.levelWidth = levelMap[0].length() * 60;
+        this.backgroundHeight = backgroundHeight;
+        this.backgroundWidth = backgroundWidth;
         this.levelMap = levelMap;
         this.appPane = appPane;
         this.gamePane = gamePane;
         this.uiPane = uiPane;
         this.player = player;
+        System.out.println(this.player.getHealth());
         this.bg = new Rectangle(backgroundWidth,backgroundHeight);
         this.bg.setFill(backgroundColor);
         this.appPane.getChildren().add(bg);
         this.ui = new UI();
+        this.primaryStage = primaryStage;
     }
-    public void initContent() throws NullPointerException{
+    public void initContent(){
+        gameEnded = false;
         for (int i=0; i< levelMap.length; i++){
             String line = levelMap[i];
             for (int j=0; j <line.length();j++){
@@ -48,7 +61,7 @@ public class Game {
                     case '0':
                         break;
                     case '1':
-                        RectangleObject platform = new RectangleObject(j*60, i *60, 60, 60, Color.GREEN, gamePane, nullVector);
+                        RectangleObject platform = new RectangleObject(j*60, i *60, 60, 60, Color.GREEN, gamePane, nullVector, 1);
                         platforms.add(platform);
                         break;
                     case '2':
@@ -56,13 +69,13 @@ public class Game {
                         collectibles.add(collectible);
                         break;
                     case '3':
-                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.RED,gamePane,new Point2D(0, 0)));
+                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 2));
                 }
             }
         }
         
         ui.setScoreboard(uiPane);
-        ui.setHealthboard(uiPane);
+        ui.setHealthboard(uiPane, player);
         
         player.getEntity().translateXProperty().addListener((obs, old, newValue) -> {
             int offset = newValue.intValue();
@@ -72,28 +85,89 @@ public class Game {
         });
         appPane.getChildren().addAll(gamePane, uiPane);
     }
-    public void update(){
-        if (isPressed(KeyCode.W) && player.getEntity().getTranslateY() >= 5){
-            jumpPlayer();
-        }
-        if (isPressed(KeyCode.A) && player.getEntity().getTranslateX() >=5){
-            movePlayerX(-5);
-        }
-        if (isPressed(KeyCode.D) && player.getEntity().getTranslateX() + 40 <=levelWidth-5){
-            movePlayerX(5);
-        }
-        if (player.getVelocity().getY() < 10){
-            player.setVelocity(player.getVelocity().add(0,1));
-        }
-        movePlayerY((int)player.getVelocity().getY());
+    public void initEndGame(){
+        Label endGameTitleLabel = new Label();
+        endGameTitleLabel.setText("You died!");
+        endGameTitleLabel.setTextFill(Color.RED);
+        endGameTitleLabel.setFont(new Font("Arial",150));
+        endGameTitleLabel.setMaxWidth(backgroundWidth/2);
+        endGameTitleLabel.setMaxHeight(backgroundHeight/2);
+        endGameTitleLabel.setTranslateX(backgroundWidth / 2 - endGameTitleLabel.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
+        endGameTitleLabel.setTranslateY(backgroundHeight / 2 - endGameTitleLabel.getMaxHeight() /4);
 
-        for (RectangleObject monkey : monkeys) {
-            monkeyJump(monkey);
-            if (monkey.getVelocity().getY() < 10){
-                monkey.setVelocity(monkey.getVelocity().add(0,1));
+        
+        Label endGameScoreLabel = new Label();
+        endGameScoreLabel.setText(ui.getFinalScore());
+        endGameScoreLabel.setTextFill(Color.YELLOW);
+        endGameScoreLabel.setFont(new Font("Arial",50));
+        endGameScoreLabel.setMaxHeight(backgroundWidth/20);
+        endGameScoreLabel.setTranslateX(Math.abs(gamePane.getLayoutX()));
+        endGameScoreLabel.setTranslateY(backgroundHeight - endGameScoreLabel.getMaxHeight());
+        
+        
+        Button endGameButton = new Button();
+        endGameButton.setText("Close");
+        endGameButton.setFont(new Font("Arial",35));
+        endGameButton.setMaxWidth(backgroundWidth/8);
+        endGameButton.setMaxHeight(backgroundHeight/6);
+        endGameButton.setTranslateX(backgroundWidth/2 - endGameButton.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
+        endGameButton.setTranslateY(backgroundHeight / 2 + endGameButton.getMaxHeight());
+        endGameButton.setOnAction(new EventHandler<ActionEvent>(){
+            @Override 
+            public void handle(ActionEvent e) {
+                primaryStage.close();
             }
-            moveMonkeyY((int)monkey.getVelocity().getY(),monkey);
+        });
+        
+
+        
+        gamePane.getChildren().addAll(endGameTitleLabel,endGameScoreLabel, endGameButton);
+        
+    }
+    
+    
+    
+    public void update(){
+        //Game end
+        if(gameEnded){
+            
         }
+        else{
+            //Game ended check
+            if(player.getHealth() <= 0){
+                initEndGame();
+                gameEnded = true;
+            }
+            //Keys pressed
+            if (isPressed(KeyCode.W) && player.getEntity().getTranslateY() >= 5){
+                jumpPlayer();
+            }
+            if (isPressed(KeyCode.A) && player.getEntity().getTranslateX() >=5){
+                movePlayerX(-5);
+            }
+            if (isPressed(KeyCode.D) && player.getEntity().getTranslateX() + 40 <=levelWidth-5){
+                movePlayerX(5);
+            }
+
+            //Gravity
+            if (player.getVelocity().getY() < 10){
+                player.setVelocity(player.getVelocity().add(0,1));
+            }
+            movePlayerY((int)player.getVelocity().getY());
+            
+            for(RectangleObject monkey : monkeys) {
+                monkeyJump(monkey);
+                if (monkey.getVelocity().getY() < 10){
+                    monkey.setVelocity(monkey.getVelocity().add(0,1));
+                }
+                moveMonkeyY((int)monkey.getVelocity().getY(),monkey);
+            }
+        }
+        
+        
+        
+        
+        
     }
     private void movePlayerX(int value) {
         boolean movingRight = value > 0;
@@ -141,14 +215,16 @@ public class Game {
                 if (player.getEntity().getBoundsInParent().intersects(monkey.getEntity().getBoundsInParent())) {
                     if (movingRight) {
                         if (player.getEntity().getTranslateX() + 40 == monkey.getEntity().getTranslateX() && player.getEntity().getTranslateY() + 40 != monkey.getEntity().getTranslateY()) {
-                            ui.setHealth(1);
+                            player.setHealth(player.getHealth()-1);
+                            ui.setHealth(player);
                             jumpPlayer();
                             return;
                         }
                     }
                     else {
                         if (player.getEntity().getTranslateX() == monkey.getEntity().getTranslateX() + 60 && player.getEntity().getTranslateY() + 40 != monkey.getEntity().getTranslateY()) {
-                            ui.setHealth(1);
+                            player.setHealth(player.getHealth()-1);
+                            ui.setHealth(player);
                             jumpPlayer();
                             return;
                         }
@@ -213,13 +289,15 @@ public class Game {
                 if(player.getEntity().getBoundsInParent().intersects(monkey.getEntity().getBoundsInParent())){
                     if(movingDown){
                         if (player.getEntity().getTranslateY() + 40 == monkey.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()){
-                            ui.setHealth(1);
+                            player.setHealth(player.getHealth()-1);
+                            ui.setHealth(player);
                             player.setVelocity(player.getVelocity().add(0,-30));
                             return;
                         }
                     }else {
                         if (player.getEntity().getTranslateY() == monkey.getEntity().getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()) {
-                            ui.setHealth(1);
+                            player.setHealth(player.getHealth()-1);
+                            ui.setHealth(player);
                             player.setVelocity(player.getVelocity().add(0,20));
                             return;
                         }
@@ -238,7 +316,7 @@ public class Game {
         }
     }
     
-    private boolean isPressed(KeyCode key){
+    public boolean isPressed(KeyCode key){
         return keys.getOrDefault(key, false);
     }
 

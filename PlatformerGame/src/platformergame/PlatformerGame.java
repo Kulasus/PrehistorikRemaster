@@ -20,18 +20,22 @@ public class PlatformerGame extends Application {
     private Pane gameRoot = new Pane();
     private Pane uiRoot = new Pane();
     private Point2D playerVelocity = new Point2D(0, 0);
-    private RectangleObject player = new RectangleObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity);
-    private Game game = new Game(1280, 720, Color.AQUA, LevelData.LEVEL1, appRoot, gameRoot, uiRoot, player);
+    private RectangleObject player = new RectangleObject(0, 600, 40, 40, Color.DARKBLUE, gameRoot, playerVelocity,3);
+    private boolean gameRuns = true;
     
     @Override
     public void start(Stage primaryStage) throws Exception{
+        Game game = new Game(1280, 720, Color.AQUA, LevelData.LEVEL1, appRoot, gameRoot, uiRoot, player, primaryStage);
         game.initContent();
         Scene scene = new Scene(appRoot);
         scene.setOnKeyPressed(event -> game.getKeys().put(event.getCode(), true));
         scene.setOnKeyReleased(event -> game.getKeys().put(event.getCode(), false));
         primaryStage.setTitle("Prehistorik");
         primaryStage.setScene(scene);
+        primaryStage.setMaxWidth(1280);
+        primaryStage.setMaxHeight(750);
         primaryStage.show();
+
 
         AnimationTimer timer = new AnimationTimer() {
             @Override
@@ -40,6 +44,8 @@ public class PlatformerGame extends Application {
             }
         };
         timer.start();
+        
+        
     }
     public static void main(String[] args) {
         launch(args);

@@ -24,17 +24,7 @@ public class GameObject {
         this.x = x;
         this.y = y;
         this.color = color;
-        /*
-        Rectangle body = new Rectangle(w,h);
-        body.setTranslateX(x);
-        body.setTranslateY(y);
-        body.setFill(color);
-        this.entity = body;        
-        pane.getChildren().add(this.entity);
-*/
     }
-    
-    
 
     public boolean isCanJump() {
         return canJump;
