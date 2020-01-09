@@ -18,13 +18,13 @@ public class GameObject {
     private boolean canJump = true;
     private int x;
     private int y;
-    private Color color;
+    private ImagePattern imgPattern;
     
-    public GameObject(int x, int y, Color color, Point2D velocity){
+    public GameObject(int x, int y, ImagePattern imgPattern, Point2D velocity){
         this.velocity = velocity;
         this.x = x;
         this.y = y;
-        this.color = color;
+        this.imgPattern = imgPattern;
     }
 
     public boolean isCanJump() {

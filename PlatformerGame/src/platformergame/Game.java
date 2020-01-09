@@ -8,6 +8,7 @@ package platformergame;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -71,16 +72,92 @@ public class Game {
                     case '0':
                         break;
                     case '1':
-                        RectangleObject platform = new RectangleObject(j*60, i *60, 60, 60, Color.GREEN, gamePane, nullVector, 1);
-                        platforms.add(platform);
+                        RectangleObject ground_1 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/ground_1.png")), gamePane, nullVector, 1);
+                        platforms.add(ground_1);
                         break;
                     case '2':
-                        CollectibleObject collectible = new CollectibleObject(j*60+30,i*60+30,30,Color.ORANGE,gamePane,nullVector);
+                        RectangleObject ground_2 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/ground_2.png")), gamePane, nullVector, 1);
+                        platforms.add(ground_2);
+                        break;
+                    case '3':
+                        RectangleObject ground_3 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/ground_3.png")), gamePane, nullVector, 1);
+                        platforms.add(ground_3);
+                        break;
+                    case 'q':
+                        RectangleObject cave_ceiling_1 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ceiling_1.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ceiling_1);
+                        break;
+                    case 'w':
+                        RectangleObject cave_ceiling_2 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ceiling_2.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ceiling_2);
+                        break;
+                    case 'e':
+                        RectangleObject cave_ceiling_3 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ceiling_3.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ceiling_3);
+                        break;  
+                    case 'r':
+                        RectangleObject cave_ground_1 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/ground_1.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_1);
+                        break;
+                    case 't':
+                        RectangleObject cave_ground_2 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ground_2.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_2);
+                        break;
+                    case 'z':
+                        RectangleObject cave_ground_3 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ground_3.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_3);
+                        break;
+                    case 'u':
+                        RectangleObject cave_ground_4 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ground_4.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_4);
+                        break;
+                    case 'i':
+                        RectangleObject cave_ground_5 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ground_5.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_5);
+                        break;
+                    case 'o':
+                        RectangleObject cave_ground_6 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ground_6.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_6);
+                        break;           
+                    case 'p':
+                        RectangleObject cave_ground_7 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/cave_ground_7.png")), gamePane, nullVector, 1);
+                        platforms.add(cave_ground_7);
+                        break;
+                    case 'a':
+                        RectangleObject jungle_mid_1 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/jungle_platform_middle_1.png")), gamePane, nullVector, 1);
+                        platforms.add(jungle_mid_1);
+                        break;
+                    case 's':
+                        RectangleObject jungle_mid_2 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/jungle_platform_middle_2.png")), gamePane, nullVector, 1);
+                        platforms.add(jungle_mid_2);
+                        break;
+                    case 'd':
+                        RectangleObject jungle_left = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/jungle_platform_left_corner_1.png")), gamePane, nullVector, 1);
+                        platforms.add(jungle_left);
+                        break;
+                    case 'f':
+                        RectangleObject jungle_right = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/jungle_platform_right_corner_1.png")), gamePane, nullVector, 1);
+                        platforms.add(jungle_right);
+                        break;
+                    case 'g':
+                        RectangleObject jungle_center = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/jungle_platform_middle_3.png")), gamePane, nullVector, 1);
+                        platforms.add(jungle_center);
+                        break;
+                    case '*':
+                        RectangleObject tree_1 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/tree_1.png")), gamePane, nullVector, 1);
+                        platforms.add(tree_1);
+                        break;
+                    case '-':
+                        RectangleObject tree_2 = new RectangleObject(j*60, i *60, 60, 60, new ImagePattern(new Image("sprites/tree_2.png")), gamePane, nullVector, 1);
+                        platforms.add(tree_2);
+                        break;
+                    case 'C':
+                        CollectibleObject collectible = new CollectibleObject(j*60+30,i*60+30,30,new ImagePattern(new Image("sprites/collectible.png")),gamePane,nullVector);
                         collectibles.add(collectible);
                         maxScore+=100;
                         break;
-                    case '3':
-                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 20));
+                    case 'M':
+                        monkeys.add(new RectangleObject(j*60,i*60,60,60,new ImagePattern(new Image("sprites/monkey_normal.png")),gamePane,new Point2D(0, 0), 20));
                         maxScore+=50;
                 }
             }
@@ -109,7 +186,6 @@ public class Game {
         
         gamePane.getChildren().add(endGameTitleLabel);
     }
-    
     public void initWonEndGame(){
         Label endGameTitleLabel = new Label();
         endGameTitleLabel.setText("You won!");
@@ -122,7 +198,6 @@ public class Game {
         
         gamePane.getChildren().add(endGameTitleLabel);
     }
-    
     public void initEndGame(){
         Label endGameScoreLabel = new Label();
         endGameScoreLabel.setText(ui.getFinalScore());
@@ -170,11 +245,10 @@ public class Game {
             if (isPressed(KeyCode.D) && player.getEntity().getTranslateX() + 40 <=levelWidth-5){
                 movePlayerX(5);
             }
-            if (isPressed(KeyCode.SPACE) && player.getEntity().getTranslateX() >=20 && player.getEntity().getTranslateX() + 40 <= levelWidth-20)
+            if (isPressed(KeyCode.SPACE) && player.getEntity().getTranslateX() >=20 && player.getEntity().getTranslateX() + 40 <= levelWidth-20 && player.isCanJump())
             {
                 attackPlayer();
             }
-
             //Gravity
             if (player.getVelocity().getY() < 10){
                 player.setVelocity(player.getVelocity().add(0,1));
@@ -261,9 +335,10 @@ public class Game {
     }
     
     private void collectCollectible(CollectibleObject collectible){
-        CollectibleObject newCol = new CollectibleObject((int)collectible.getEntity().getTranslateX(),(int)collectible.getEntity().getTranslateY(),30, (Color)bg.getFill() , gamePane, nullVector);
-        player.getEntity().toFront();
+        collectible.getEntity().setFill((Color)bg.getFill());
         collectibles.remove(collectible);
+        player.getEntity().toFront();
+        
     }
     
     private void movePlayerY(int value){
@@ -274,6 +349,7 @@ public class Game {
                 if(player.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())){
                     if(movingDown){
                         if (player.getEntity().getTranslateY() + 40 == platform.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != platform.getEntity().getTranslateX() && player.getEntity().getTranslateX() != platform.getEntity().getTranslateX()+60){
+                            player.getEntity().setFill(new ImagePattern(new Image("sprites/player_normal.png")));
                             player.setCanJump(true);
                             return;
                         }
@@ -293,6 +369,7 @@ public class Game {
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
                             ui.setScore(100);
+                            player.getEntity().setFill(new ImagePattern(new Image("sprites/player_normal.png")));
                             player.setCanJump(true);
                             return;
                         }
@@ -315,20 +392,19 @@ public class Game {
                         if (player.getEntity().getTranslateY() + 40 == monkey.getEntity().getTranslateY() && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()){
                             player.setHealth(player.getHealth()-1);
                             ui.setHealth(player);
-                            player.setVelocity(player.getVelocity().add(0,-30));
+                            jumpPlayer();
                             return;
                         }
                     }else {
                         if (player.getEntity().getTranslateY() == monkey.getEntity().getTranslateY() + 60 && player.getEntity().getTranslateX() + 40 != monkey.getEntity().getTranslateX()) {
                             player.setHealth(player.getHealth()-1);
                             ui.setHealth(player);
-                            player.setVelocity(player.getVelocity().add(0,20));
+                            jumpPlayer();
                             return;
                         }
                     }
                 }
             }
-            player.setCanJump(false);
             player.getEntity().setTranslateY(player.getEntity().getTranslateY() + (movingDown ? 1 : -1));
         }
     }
@@ -336,6 +412,7 @@ public class Game {
     private void jumpPlayer(){
         if(player.isCanJump()){
             player.setVelocity(player.getVelocity().add(0,-30));
+            player.getEntity().setFill(new ImagePattern(new Image("sprites/player_jump.png")));
             player.setCanJump(false);
         }
     }
@@ -372,12 +449,13 @@ public class Game {
                 //System.out.println(monkey.toString() + "crashed");
                 if(monkey.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())){
                     if(movingDown){
-                        if (monkey.getEntity().getTranslateY() + 60 == platform.getEntity().getTranslateY() && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX()){
+                        if (monkey.getEntity().getTranslateY() + 60 == platform.getEntity().getTranslateY() && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX() && monkey.getEntity().getTranslateX() != platform.getEntity().getTranslateX()+60){
+                            monkey.getEntity().setFill(new ImagePattern(new Image("sprites/monkey_normal.png")));
                             monkey.setCanJump(true);
                             return;
                         }
                     }else {
-                        if (monkey.getEntity().getTranslateY() == platform.getEntity().getTranslateY() + 60 && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX()) {
+                        if (monkey.getEntity().getTranslateY() == platform.getEntity().getTranslateY() + 60 && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX() && monkey.getEntity().getTranslateX() != platform.getEntity().getTranslateX()+60) {
                             monkey.setVelocity(monkey.getVelocity().add(0,5));
                             return;
                         }
@@ -393,6 +471,7 @@ public class Game {
         if(rand.nextInt(100)==1){
             if(monkey.isCanJump()){
                 monkey.setVelocity(monkey.getVelocity().add(0,-40));
+                monkey.getEntity().setFill(new ImagePattern(new Image("sprites/monkey_jump.png")));
                 monkeyRotator.setNode(monkey.getEntity());
                 monkeyRotator.play();
                 monkey.setCanJump(false);
@@ -421,8 +500,8 @@ public class Game {
         }
     }
     private void monkeyDie(RectangleObject monkey) {
-        RectangleObject newMonkey = new RectangleObject((int)monkey.getEntity().getTranslateX(),(int)monkey.getEntity().getTranslateY(),60,60,(Color)bg.getFill(),gamePane,nullVector,1);
-        player.getEntity().toFront();
+        monkey.getEntity().setFill((Color)bg.getFill());
         monkeys.remove(monkey);
+        player.getEntity().toFront();
     }
 }
