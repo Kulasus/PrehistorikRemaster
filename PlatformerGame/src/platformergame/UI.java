@@ -16,7 +16,7 @@ import javafx.scene.layout.Pane;
 public class UI {
     Pane pane;
     int score = 0;
-    int health = 3;
+    //int health = 3;
     TextField scoreboard = new TextField(); 
     TextField healthboard = new TextField();
     
@@ -28,23 +28,21 @@ public class UI {
         pane.getChildren().add(scoreboard);
     }
     
-    public void setHealthboard(Pane pane){
+    public void setHealthboard(Pane pane, RectangleObject player){
         healthboard.setDisable(true);
-        setHealth(0);
+        setHealth(player);
         healthboard.setAlignment(Pos.CENTER_RIGHT);
         healthboard.setTranslateX(scoreboard.getMaxWidth());
         healthboard.setMaxWidth(200);
         pane.getChildren().add(healthboard);
     }
-    public void setHealth(int points){
-        health -= points;
+    public void setHealth(RectangleObject player){
         StringBuilder sb = new StringBuilder();
         sb.append("Your health: ");
-        sb.append(health);
+        sb.append(player.getHealth());
+        System.out.println(player.getHealth());
         healthboard.setText(sb.toString());
     }
-    
-    
     public void setScore(int points){    
         score += points;
         StringBuilder sb = new StringBuilder();
@@ -52,6 +50,13 @@ public class UI {
         sb.append(score);
         scoreboard.setText(sb.toString());
     }
-    public int getScore(){return score;}
-    public int getHealth(){return health;}
+    public int getScore(){return score;
+    }
+    
+    public String getFinalScore(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Your final score: ");
+        sb.append(score);
+        return sb.toString();
+    }
 }
