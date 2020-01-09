@@ -19,6 +19,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.animation.RotateTransition;
+import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 
 public class Game {
     private RectangleObject player;
@@ -35,6 +38,7 @@ public class Game {
     private boolean gameEnded = false;
     private int backgroundHeight, backgroundWidth, levelWidth;
     private Stage primaryStage;
+    private RotateTransition monkeyRotator = new RotateTransition();
     
     public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player, Stage primaryStage){
         this.levelWidth = levelMap[0].length() * 60;
@@ -51,6 +55,10 @@ public class Game {
         this.appPane.getChildren().add(bg);
         this.ui = new UI();
         this.primaryStage = primaryStage;
+        this.monkeyRotator.setAxis(Rotate.Z_AXIS);
+        this.monkeyRotator.setByAngle(360);
+        this.monkeyRotator.setCycleCount(1);
+        this.monkeyRotator.setDuration(Duration.millis(1000));  
     }
     public void initContent(){
         gameEnded = false;
@@ -356,10 +364,12 @@ public class Game {
         }   
     }
 
-    private void monkeyJump(GameObject monkey) {
+    private void monkeyJump(RectangleObject monkey) {
         if(rand.nextInt(100)==1){
             if(monkey.isCanJump()){
                 monkey.setVelocity(monkey.getVelocity().add(0,-40));
+                monkeyRotator.setNode(monkey.getEntity());
+                monkeyRotator.play();
                 monkey.setCanJump(false);
             }
         }
