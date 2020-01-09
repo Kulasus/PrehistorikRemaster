@@ -69,7 +69,7 @@ public class Game {
                         collectibles.add(collectible);
                         break;
                     case '3':
-                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 2));
+                        monkeys.add(new RectangleObject(j*60,i*60,60,60,Color.BROWN,gamePane,new Point2D(0, 0), 20));
                 }
             }
         }
@@ -118,21 +118,10 @@ public class Game {
                 primaryStage.close();
             }
         });
-        
-
-        
         gamePane.getChildren().addAll(endGameTitleLabel,endGameScoreLabel, endGameButton);
-        
     }
-    
-    
-    
     public void update(){
-        //Game end
-        if(gameEnded){
-            
-        }
-        else{
+        if(!gameEnded){
             //Game ended check
             if(player.getHealth() <= 0){
                 initEndGame();
@@ -147,6 +136,10 @@ public class Game {
             }
             if (isPressed(KeyCode.D) && player.getEntity().getTranslateX() + 40 <=levelWidth-5){
                 movePlayerX(5);
+            }
+            if (isPressed(KeyCode.SPACE) && player.getEntity().getTranslateX() >=20 && player.getEntity().getTranslateX() + 40 <= levelWidth-20)
+            {
+                attackPlayer();
             }
 
             //Gravity
@@ -163,11 +156,6 @@ public class Game {
                 moveMonkeyY((int)monkey.getVelocity().getY(),monkey);
             }
         }
-        
-        
-        
-        
-        
     }
     private void movePlayerX(int value) {
         boolean movingRight = value > 0;
@@ -195,6 +183,8 @@ public class Game {
                     if (movingRight) {
                         if (player.getEntity().getTranslateX() + 40 == collectible.getEntity().getTranslateX()-30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
+                            player.setHealth(player.getHealth()+5);
+                            ui.setHealth(player);
                             ui.setScore(100);
                             return;
                         }
@@ -202,6 +192,7 @@ public class Game {
                     else {
                         if (player.getEntity().getTranslateX() == collectible.getEntity().getTranslateX() + 30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
+                            ui.setHealth(player);
                             ui.setScore(100);
                             return;
                         }
@@ -367,11 +358,36 @@ public class Game {
 
     private void monkeyJump(GameObject monkey) {
         if(rand.nextInt(100)==1){
-            System.out.println(monkey.toString() + "jumped");
             if(monkey.isCanJump()){
                 monkey.setVelocity(monkey.getVelocity().add(0,-40));
                 monkey.setCanJump(false);
             }
         }
+    }
+
+    private void attackPlayer() {
+        for(RectangleObject monkey : monkeys){
+            //attack from left
+            if(player.getEntity().getTranslateX()+20+40 >= monkey.getEntity().getTranslateX() && player.getEntity().getTranslateX()+20+40 <= monkey.getEntity().getTranslateX()+20){
+                monkey.setHealth(monkey.getHealth()-1);
+                if(monkey.getHealth() <= 0){
+                    monkeyDie(monkey);
+                    ui.setScore(50);
+                }
+            }   
+            //attack from right
+            else if(player.getEntity().getTranslateX()-20 <= monkey.getEntity().getTranslateX()+60 && player.getEntity().getTranslateX()-20 >= monkey.getEntity().getTranslateX()-20+60){
+                monkey.setHealth(monkey.getHealth()-1);
+                if(monkey.getHealth() <= 0){
+                    monkeyDie(monkey);
+                    ui.setScore(50);
+                }
+            }
+        }
+    }
+    private void monkeyDie(RectangleObject monkey) {
+        RectangleObject newMonkey = new RectangleObject((int)monkey.getEntity().getTranslateX(),(int)monkey.getEntity().getTranslateY(),60,60,(Color)bg.getFill(),gamePane,nullVector,1);
+        player.getEntity().toFront();
+        monkeys.remove(monkey);
     }
 }
