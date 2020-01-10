@@ -21,6 +21,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.animation.RotateTransition;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.transform.Rotate;
@@ -52,7 +53,6 @@ public class Game {
         this.gamePane = gamePane;
         this.uiPane = uiPane;
         this.player = player;
-        System.out.println(this.player.getHealth());
         this.bg = new Rectangle(backgroundWidth,backgroundHeight);
         this.bg.setFill(backgroundColor);
         this.appPane.getChildren().add(bg);
@@ -199,6 +199,13 @@ public class Game {
         gamePane.getChildren().add(endGameTitleLabel);
     }
     public void initEndGame(){
+        TextField endGamePlayerNameField = new TextField();
+        endGamePlayerNameField.setText("player");
+        endGamePlayerNameField.setFont(new Font("Arial",25));
+        endGamePlayerNameField.setMaxHeight(backgroundHeight/20);
+        endGamePlayerNameField.setTranslateX(Math.abs(gamePane.getLayoutX()));
+        endGamePlayerNameField.setTranslateY(backgroundHeight - endGamePlayerNameField.getMaxHeight()*3);
+        
         Label endGameScoreLabel = new Label();
         endGameScoreLabel.setText(ui.getFinalScore());
         endGameScoreLabel.setTextFill(Color.YELLOW);
@@ -220,7 +227,7 @@ public class Game {
                 primaryStage.close();
             }
         });
-        gamePane.getChildren().addAll(endGameScoreLabel, endGameButton);
+        gamePane.getChildren().addAll(endGameScoreLabel, endGameButton, endGamePlayerNameField);
     }
     public void update(){
         if(!gameEnded){
@@ -446,7 +453,6 @@ public class Game {
         for (int i=0; i < Math.abs(value);i++){
             //Platforms collision
             for (RectangleObject platform : platforms){
-                //System.out.println(monkey.toString() + "crashed");
                 if(monkey.getEntity().getBoundsInParent().intersects(platform.getEntity().getBoundsInParent())){
                     if(movingDown){
                         if (monkey.getEntity().getTranslateY() + 60 == platform.getEntity().getTranslateY() && monkey.getEntity().getTranslateX() + 60 != platform.getEntity().getTranslateX() && monkey.getEntity().getTranslateX() != platform.getEntity().getTranslateX()+60){

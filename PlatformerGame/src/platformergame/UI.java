@@ -16,7 +16,6 @@ import javafx.scene.layout.Pane;
 public class UI {
     Pane pane;
     int score = 0;
-    //int health = 3;
     TextField scoreboard = new TextField(); 
     TextField healthboard = new TextField();
     
@@ -40,7 +39,6 @@ public class UI {
         StringBuilder sb = new StringBuilder();
         sb.append("Your health: ");
         sb.append(player.getHealth());
-        System.out.println(player.getHealth());
         healthboard.setText(sb.toString());
     }
     public void setScore(int points){    

@@ -5,12 +5,15 @@
  */
 package platformergame;
 
+import java.io.File;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -24,6 +27,7 @@ public class PlatformerGame extends Application {
     private Point2D playerVelocity = new Point2D(0, 0);
     private RectangleObject player = new RectangleObject(0, 600, 40, 40, new ImagePattern(new Image("sprites/player_normal.png")), gameRoot, playerVelocity,10);
     private boolean gameRuns = true;
+    private MediaPlayer musicPlayer = new MediaPlayer(new Media(new File("src/music/music_1.mp3").toURI().toString()));
     
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -37,6 +41,7 @@ public class PlatformerGame extends Application {
         primaryStage.setMaxWidth(1280);
         primaryStage.setMaxHeight(750);
         primaryStage.show();
+        musicPlayer.play();
 
 
         AnimationTimer timer = new AnimationTimer() {
