@@ -31,7 +31,7 @@ public class PlatformerGame extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Game game = new Game(1280, 720, Color.AQUA, LevelData.LEVEL1, appRoot, gameRoot, uiRoot, player, primaryStage);
+        Game game = new Game(1280, 720, Color.AQUA, new LevelData("src/leveldata/level1.txt"), appRoot, gameRoot, uiRoot, player, primaryStage);
         game.initContent();
         Scene scene = new Scene(appRoot);
         scene.setOnKeyPressed(event -> game.getKeys().put(event.getCode(), true));

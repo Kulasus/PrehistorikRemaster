@@ -5,10 +5,14 @@
  */
 package platformergame;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -34,7 +38,7 @@ public class Game {
     private ArrayList<CollectibleObject> collectibles = new ArrayList<>();
     private ArrayList<RectangleObject> monkeys = new ArrayList<>();
     private Rectangle bg;
-    private String[] levelMap;
+    private LevelData level;
     private Pane appPane, gamePane, uiPane;
     private Point2D nullVector = new Point2D(0,0);
     private UI ui;
@@ -44,11 +48,11 @@ public class Game {
     private Stage primaryStage;
     private RotateTransition monkeyRotator = new RotateTransition();
     
-    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, String[] levelMap, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player, Stage primaryStage){
-        this.levelWidth = levelMap[0].length() * 60;
+    public Game(int backgroundWidth, int backgroundHeight, Color backgroundColor, LevelData level, Pane appPane, Pane gamePane, Pane uiPane, RectangleObject player, Stage primaryStage){
+        this.levelWidth = level.getData()[0].length() * 60;
         this.backgroundHeight = backgroundHeight;
         this.backgroundWidth = backgroundWidth;
-        this.levelMap = levelMap;
+        this.level = level;
         this.appPane = appPane;
         this.gamePane = gamePane;
         this.uiPane = uiPane;
@@ -65,8 +69,8 @@ public class Game {
     }
     public void initContent(){
         gameEnded = false;
-        for (int i=0; i< levelMap.length; i++){
-            String line = levelMap[i];
+        for (int i=0; i< level.getData().length; i++){
+            String line = level.getData()[i];
             for (int j=0; j <line.length();j++){
                 switch (line.charAt(j)){
                     case '0':
@@ -198,7 +202,7 @@ public class Game {
         
         gamePane.getChildren().add(endGameTitleLabel);
     }
-    public void initEndGame(){
+    public void initEndGame() throws IOException{
         TextField endGamePlayerNameField = new TextField();
         endGamePlayerNameField.setText("player");
         endGamePlayerNameField.setFont(new Font("Arial",25));
@@ -221,15 +225,20 @@ public class Game {
         endGameButton.setMaxHeight(backgroundHeight/6);
         endGameButton.setTranslateX(backgroundWidth/2 - endGameButton.getMaxWidth() / 2 + Math.abs(gamePane.getLayoutX()));
         endGameButton.setTranslateY(backgroundHeight / 2 + endGameButton.getMaxHeight());
-        endGameButton.setOnAction(new EventHandler<ActionEvent>(){
-            @Override 
-            public void handle(ActionEvent e) {
-                primaryStage.close();
+        endGameButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e){
+                try {
+                    writeScore(endGamePlayerNameField.getText());
+                    primaryStage.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
         gamePane.getChildren().addAll(endGameScoreLabel, endGameButton, endGamePlayerNameField);
     }
-    public void update(){
+    public void update() throws IOException{
         if(!gameEnded){
             //Game ended check
             if(player.getHealth() <= 0){
@@ -509,5 +518,9 @@ public class Game {
         monkey.getEntity().setFill((Color)bg.getFill());
         monkeys.remove(monkey);
         player.getEntity().toFront();
+    }
+    
+    private void writeScore(String playerName) throws IOException{
+        BufferedWriter br = new BufferedWriter(new FileWriter("src/leaderboards.txt"));
     }
 }

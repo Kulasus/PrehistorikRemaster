@@ -1,5 +1,12 @@
 package platformergame;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class LevelData {
     /*  DESIGN INFO: 
         resolutin = 28 columns x 7 layers
@@ -27,19 +34,33 @@ public class LevelData {
         C = Collectible
         M = Monkey
     */
-    public static String[] LEVEL1 = new String[]{
-        "dasasasasaasasasasasasssasasasasasasaassssasaaaasasasasasassasaaf",
-        "00000000000000ggggg0000000000000000000000000000000000000000000000",
-        "00000000000000000000000000000000000000000000000000000000000000000",
-        "0C0CC00M00C000gg0000000000000000000000000g00000M000000000000C0000",
-        "daasssassasaaaaasasssf00000000000000000dasasssasaasaaaaaasasasasf",
-        "00000000C000000000000000000000g000000000000000001000000g000000000",
-        "dassasassassf00000000000000000g00g000000000000000000000g000000000",
-        "00000000000000000000000caassssassasas331212000000000000g000000000",
-        "00000000000000-00000000000000000000qqepopp23112311000000000000000",
-        "00000000000000*000000-0000000000000000eeqqwqewepp3000000000000000",
-        "00000000M00000*000000*M000000000000000000000C00Cpp000000000000000",
-        "12311223131122132213331122323122111rtzuioppppoppp1122333233221232",      
-    };
+    private String[] data;
+    public LevelData(String[] data){
+        this.data = data;
+    }
+    public LevelData(String path) throws IOException{
+        this.data = LevelFromFile(path);
+    }
+    public String[] getData() {
+        return data;
+    }
+    public String[] LevelFromFile(String path) throws IOException{
+        String[] result = new String[12];
+        BufferedReader inputStream = null;
+        try{
+           inputStream = new BufferedReader(new FileReader(path));
+           String line = inputStream.readLine();
+           int whileCounter = 0;
+           while(line!=null){
+               result[whileCounter] = line;
+               whileCounter++;
+               line = inputStream.readLine();
+           }
+        } finally{
+            inputStream.close();
+        }
+        return result;
+    }
+    
     
 }
