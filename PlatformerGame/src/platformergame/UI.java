@@ -15,14 +15,12 @@ import javafx.scene.layout.Pane;
  */
 public class UI {
     Pane pane;
-    int score = 0;
-    //int health = 3;
     TextField scoreboard = new TextField(); 
     TextField healthboard = new TextField();
     
-    public void setScoreboard(Pane pane){
+    public void setScoreboard(Pane pane, RectangleObject player){
         scoreboard.setDisable(true);
-        setScore(score);
+        setScore(player);
         scoreboard.setAlignment(Pos.CENTER_RIGHT);
         scoreboard.setMaxWidth(200);
         pane.getChildren().add(scoreboard);
@@ -40,23 +38,12 @@ public class UI {
         StringBuilder sb = new StringBuilder();
         sb.append("Your health: ");
         sb.append(player.getHealth());
-        System.out.println(player.getHealth());
         healthboard.setText(sb.toString());
     }
-    public void setScore(int points){    
-        score += points;
+    public void setScore(RectangleObject player){    
         StringBuilder sb = new StringBuilder();
         sb.append("Your score: ");
-        sb.append(score);
+        sb.append(player.getScore());
         scoreboard.setText(sb.toString());
-    }
-    public int getScore(){return score;
-    }
-    
-    public String getFinalScore(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("Your final score: ");
-        sb.append(score);
-        return sb.toString();
     }
 }

@@ -1,0 +1,6 @@
+player 0
+player michal 0
+player 0
+player 50
+player 100
+lukas 150
