@@ -5,14 +5,20 @@
  */
 package platformergame;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -167,7 +173,7 @@ public class Game {
             }
         }
         
-        ui.setScoreboard(uiPane);
+        ui.setScoreboard(uiPane, player);
         ui.setHealthboard(uiPane, player);
         
         player.getEntity().translateXProperty().addListener((obs, old, newValue) -> {
@@ -211,7 +217,7 @@ public class Game {
         endGamePlayerNameField.setTranslateY(backgroundHeight - endGamePlayerNameField.getMaxHeight()*3);
         
         Label endGameScoreLabel = new Label();
-        endGameScoreLabel.setText(ui.getFinalScore());
+        endGameScoreLabel.setText("Your final score "+ player.getScore());
         endGameScoreLabel.setTextFill(Color.YELLOW);
         endGameScoreLabel.setFont(new Font("Arial",50));
         endGameScoreLabel.setMaxHeight(backgroundWidth/20);
@@ -246,7 +252,7 @@ public class Game {
                 initEndGame();
                 gameEnded = true;
             }
-            if(maxScore == ui.getScore()){
+            if(maxScore == player.getScore()){
                 initWonEndGame();
                 initEndGame();
                 gameEnded = true;
@@ -308,7 +314,8 @@ public class Game {
                             collectCollectible(collectible);
                             player.setHealth(player.getHealth()+5);
                             ui.setHealth(player);
-                            ui.setScore(100);
+                            player.setScore(100);
+                            ui.setScore(player);
                             return;
                         }
                     }
@@ -316,7 +323,8 @@ public class Game {
                         if (player.getEntity().getTranslateX() == collectible.getEntity().getTranslateX() + 30 && player.getEntity().getTranslateY() + 40 != collectible.getEntity().getTranslateY()) {
                             collectCollectible(collectible);
                             ui.setHealth(player);
-                            ui.setScore(100);
+                            player.setScore(100);
+                            ui.setScore(player);
                             return;
                         }
                     }
@@ -384,7 +392,8 @@ public class Game {
                         if (player.getEntity().getTranslateY() + 40 == collectible.getEntity().getTranslateY()-30 && player.getEntity().getTranslateX() + 40 != collectible.getEntity().getTranslateX()){
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
-                            ui.setScore(100);
+                            player.setScore(100);
+                            ui.setScore(player);
                             player.getEntity().setFill(new ImagePattern(new Image("sprites/player_normal.png")));
                             player.setCanJump(true);
                             return;
@@ -393,7 +402,8 @@ public class Game {
                         if (player.getEntity().getTranslateY() == collectible.getEntity().getTranslateY() + 30 && player.getEntity().getTranslateX() + 40 != collectible.getEntity().getTranslateX()) {
                             collectCollectible(collectible);
                             collectibles.remove(collectible);
-                            ui.setScore(100);
+                            player.setScore(100);
+                            ui.setScore(player);
                             player.setVelocity(player.getVelocity().add(0,5));
                             return;
                         }
@@ -501,7 +511,8 @@ public class Game {
                 monkey.setHealth(monkey.getHealth()-1);
                 if(monkey.getHealth() <= 0){
                     monkeyDie(monkey);
-                    ui.setScore(50);
+                    player.setScore(50);
+                    ui.setScore(player);
                 }
             }   
             //attack from right
@@ -509,7 +520,8 @@ public class Game {
                 monkey.setHealth(monkey.getHealth()-1);
                 if(monkey.getHealth() <= 0){
                     monkeyDie(monkey);
-                    ui.setScore(50);
+                    player.setScore(50);
+                    ui.setScore(player);
                 }
             }
         }
@@ -519,8 +531,43 @@ public class Game {
         monkeys.remove(monkey);
         player.getEntity().toFront();
     }
-    
-    private void writeScore(String playerName) throws IOException{
-        BufferedWriter br = new BufferedWriter(new FileWriter("src/leaderboards.txt"));
+
+    private void writeScore(String name) throws IOException{
+        ArrayList<LeaderboardsLine> lines = new ArrayList<LeaderboardsLine>();
+        LeaderboardsLine newLine = new LeaderboardsLine(player.getScore(),name);
+        lines.add(newLine);
+        BufferedReader inputStream = null;
+        BufferedWriter outputStream = null;
+        String line;
+        try {
+            inputStream = new BufferedReader(new FileReader("src/leaderboards.txt"));
+            line = inputStream.readLine();
+            while(line != null){
+                int index = line.lastIndexOf(" ");
+                lines.add(new LeaderboardsLine(Integer.parseInt(line.substring(index+1)),line.substring(0,index)));
+                line = inputStream.readLine();
+            }
+            Collections.sort(lines);
+            inputStream.close();
+            outputStream = new BufferedWriter(new FileWriter("src/leaderboards.txt"));
+            Iterator it = lines.iterator();
+            while(it.hasNext()){
+                outputStream.write(it.next().toString());
+                outputStream.newLine();
+            }
+            outputStream.close();
+            System.out.println(getAllNames(lines));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Game.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
+    public String getAllNames(ArrayList<LeaderboardsLine> lines)
+    {
+        String result = lines.stream()
+               .map(LeaderboardsLine::getName)
+               .collect(Collectors.joining(", "));
+        return result;    
+    }
+    
 }

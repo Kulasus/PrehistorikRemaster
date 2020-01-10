@@ -21,6 +21,7 @@ public class RectangleObject extends GameObject{
     private int h;
     private Rectangle entity;
     private int health;
+    int score = 0;
     public RectangleObject(int x, int y, int h, int w, ImagePattern imgPattern, Pane pane, Point2D velocity, int health){
         super(x,y,imgPattern,velocity);
         this.w = w;
@@ -42,6 +43,14 @@ public class RectangleObject extends GameObject{
     }
     public void setHealth(int newHealth){
         health = newHealth;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int i) {
+        score+=i;
     }
     
 }

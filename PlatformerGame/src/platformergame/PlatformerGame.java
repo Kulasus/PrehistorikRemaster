@@ -6,6 +6,9 @@
 package platformergame;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
@@ -47,7 +50,11 @@ public class PlatformerGame extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                game.update();
+                try {
+                    game.update();
+                } catch (IOException ex) {
+                    Logger.getLogger(PlatformerGame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         };
         timer.start();
